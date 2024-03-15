@@ -9,7 +9,7 @@
 编写大型项目的Makefile十分复杂，通过**CMake**就可以更简洁的定义构建流程，其中CMake定义构建过程的文件为**CMakeLists.txt**。
 
 其大致关系图如下：
-![关系图](Relationship_of_CMake_and_cpp.png "关系图")
+![关系图](photos\Relationship_of_CMake_and_cpp.png "关系图")
 
 ## 二、编写例子
 
