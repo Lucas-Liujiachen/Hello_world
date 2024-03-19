@@ -90,8 +90,11 @@ set命令可以用来设置普通变量、Cache变量（缓存条目）、环境
 set的值&lt;value&gt;…表示可以给变量设置0个或者多个值，当设置多个值时（大于2个），多个值会通过分号连接符连接成一个真实的值赋值给变量；当设置0个值时，实际上是把变量变为未设置状态，相当于调用unset命令。
 
 **普通变量命令**：
+
 格式：`set(<variable> <value>...[PARENT_SCOPE])`
+
 含义：将变量variable设置为值&lt;value&gt;…，变量variable的作用域为调用set命令的函数或者当前目录。
+
 **PARENT_SCOPE**使用规则：
 如果使用了PARENT_SCOPE选项，意味着该变量的作用域会传递到上一层（也就是上一层目录或者当前函数的调用者，如果是函数则传递到函数的调用者，如果是目录则传递到上一层目录），并且在当前作用域该变量不受带PARENT_SCOPE选项的set命令的影响（如果变量之前没有定义，那么在当前作用域仍然是无定义的；如果之前有定义值，那么值和之前定义的值保持一致）。
 
@@ -210,7 +213,9 @@ message (">>> in top level, value = ${normal_var_in_sub_dir}")
 ```
 
 **Cache变量命令**：
+
 格式：`set(<variable> <value>... CACHE <type> <docstring> [FORCE])`
+
 含义：
 
 1. 将缓存条目variable设置为值&lt;value&gt; ...
@@ -233,7 +238,9 @@ message (">>> in top level, value = ${normal_var_in_sub_dir}")
 - 如果变量类型是目录或者文件路径，通过-D选项传入的若只是相对路径，那么set会给这个相对路径前添加当前的工作目录以变成绝对路径（如果已经是绝对路径则不会处理）。
 
 **环境变量命令**：
+
 格式：`set(ENV{<variable>} [<value>])`
+
 含义：将环境变量设置为value，**注意**value可以没有。之后可以使用`$ENV{variable}`来获得环境变量的值。
 
 注意事项：
@@ -270,8 +277,6 @@ add_executable (<name> ALIAS <target>)
 
 作用：
 使用指定的源文件来生成目标可执行文件。可执行文件分为三类：普通可执行目标文件、导入可执行目标文件、别名可执行目标文件
-
-参数：
 
 - **普通可执行目标文件**
   - name:可执行目标文件的名字，在一个cmake文件中，**这个名字必须全局唯一**
