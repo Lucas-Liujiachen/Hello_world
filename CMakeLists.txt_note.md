@@ -296,7 +296,9 @@ add_executable (<name> ALIAS <target>)
 参数：
 
 &#10052;**name**:导入可执行文件的名字
+
 &#10052;**IMPORTED**:选项指定后，属性IMPORTED会被置为TRUE，在工程内构建的可执行目标文件的属性IMPORTED会被置为FALSE
+
 &#10052;**GLABAL**:可执行目标文件的范围为文件创建的目录及子目录，指定GLOBAL则将范围扩大到整个工程
 
 - **别名可执行目标文件**
