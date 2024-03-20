@@ -81,3 +81,6 @@ $(OBJS)         #使用变量（取值）
 &#10052;LDFLAGS：链接库使用的选项，如： -L -l
 
 变量的默认值是可以修改的比如CC的默认值是cc，但是可以修改为gcc：CC=gcc
+
+jfklsdjlaff
+dfddfsffdsfsf
