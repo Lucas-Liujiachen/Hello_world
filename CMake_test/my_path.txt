@@ -1,0 +1,7 @@
+& "C:\Program Files\CMake\bin\cmake.exe"
+
+命令如下：
+每次更改之后（请确保在build文件下进行操作）
+1. cmake ..
+2. cmake --build . --config release
+3. 选择相应的执行文件

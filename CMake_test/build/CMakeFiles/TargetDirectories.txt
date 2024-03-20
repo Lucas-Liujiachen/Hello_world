@@ -1,0 +1,5 @@
+C:/Users/320248990/Desktop/Hello_World/Hello_world/CMake_test/build/CMakeFiles/math.dir
+C:/Users/320248990/Desktop/Hello_World/Hello_world/CMake_test/build/CMakeFiles/package.dir
+C:/Users/320248990/Desktop/Hello_World/Hello_world/CMake_test/build/CMakeFiles/package_source.dir
+C:/Users/320248990/Desktop/Hello_World/Hello_world/CMake_test/build/CMakeFiles/edit_cache.dir
+C:/Users/320248990/Desktop/Hello_World/Hello_world/CMake_test/build/CMakeFiles/rebuild_cache.dir
