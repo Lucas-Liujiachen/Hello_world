@@ -76,14 +76,13 @@ Linux内核和根文件系统是完全独立的两个部分，但是在嵌入式
 
 /etc目录包含很多文件.许多网络配置文件也在/etc 中.
 
-$\left.\begin{matrix}/etc/rc\\ /etc/rc.d\\ /etc/rc*.d \end{matrix}\right\}=启动、或改变运行级时运行的scripts或scripts的目录$
+$\left.\begin{matrix}/etc/rc\\ /etc/rc.d\\ /etc/rc*.d \end{matrix}\right\}启动、或改变运行级时运行的scripts或scripts的目录$
 
 **/etc/fstab**: 启动时mount -a命令(在/etc/rc 或等效的启动文件中)自动mount的文件系统列表.Linux下，也包括用swapon -a启用的swap区的信息
 
 **/etc/inittab**: init 的配置文件
 
-$\left.\begin{matrix}/etc/profile \\ /etc/csh.login\\ /etc/csh.cshrc   \end{matrix}\right\}= 登录或启动时Bourne或Cshells执行的文件.这允许系统管理员为所有用户建立全局缺省环境$
-
+$\left.\begin{matrix}/etc/profile \\ /etc/csh.login\\ /etc/csh.cshrc   \end{matrix}\right\} 登录或启动时Bourne或Cshells执行的文件.这允许系统管理员为所有用户建立全局缺省环境$
 
 #### 1-3-2 bin目录
 
@@ -104,7 +103,3 @@ cfdisk、dhcpcd、dump、e2fsck、fdisk、halt、ifconfig、ifup、 ifdown、ini
 
 主要放置网路管理的必备程序，例如:
 dhcpd、httpd、imap、in.*d、inetd、lpd、named、netconfig、nmbd、samba、sendmail、squid、swap、tcpd、tcpdump等
-
-
-
-
