@@ -38,7 +38,6 @@ NOTE:
 ![网络设置1](../Photos/Internet_setting_1.png)
 ![网络设置2](../Photos/Internet_setting_2.png)
 
-
 之后找到下载的文件，示例中为china-vip-pac.pac，打开。
 寻找代理服务器和端口号（有很多，随便找一个，如果不行就换一个）
 ![网络设置3](../Photos/Internet_setting_3.png)

@@ -62,7 +62,7 @@
 >
 > ```You can also run generated QEMU images with a command like 'runqemu qemux86-64'```
 >
-> ```Other commonly useful commands are:``` 
+> ```Other commonly useful commands are:```  
 > ```- 'devtool' and 'recipetool' handle common recipe tasks```  
 > ```- 'bitbake-layers' handles common layer tasks```  
 > ```- 'oe-pkgdata-util' handles common target package tasks```
@@ -71,7 +71,7 @@
 
 **检查本地配置文件:** 当构建环境结束后，名为local.conf的本地设置文件就变得可用了。
 请在构建目录conf/local.conf中取消一下行的注释
->```BB_HASHSERVE_UPSTREAM = "wss://hashserv.yoctoproject.org/ws"``` 
+>```BB_HASHSERVE_UPSTREAM = "wss://hashserv.yoctoproject.org/ws"```  
 >```SSTATE_MIRRORS ?= "file://.* http://cdn.jsdelivr.net/yocto/>sstate/all/PATH;downloadfilename=PATH"```  
 >```BB_HASHSERVE = "auto"```  
 >```BB_SIGNATURE_HANDLER = "OEEquivHash"```
