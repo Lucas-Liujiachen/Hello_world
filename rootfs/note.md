@@ -9,7 +9,7 @@
 
 ## 二、根文件系统
 
-### 1-1 什么是根文件系统
+### 2-1 什么是根文件系统
 
 根文件系统首先是一个文件系统，它具有文件系统具有的普通文件系统的存储数据文件的功能。与其他文件系统不同的是：
 （1）它是内核启动时挂载的第一个文件系统
@@ -29,7 +29,7 @@ Linux内核和根文件系统是完全独立的两个部分，但是在嵌入式
 
 **在Linux中将一个文件系统与一个设备关联起来的过程称为“挂载（mount）”**。使用 mount 命令将一个文件系统附着到当前文件系统层次结构中（根）。在执行挂装时，要提供文件系统类型、文件系统和一个挂装点。根文件系统被挂载到根目录下“/”上后，在根目录下就有根文件系统的各个目录，文件：/bin /sbin /mnt等，再将其他分区挂接到/mnt目录上，/mnt目录下就有这个分区的各个目录，文件。
 
-**小结**：
+**那么什么是根文件系统？**：
 
 - Linux系统启动之后，首先由内核挂载的第一个逻辑文件系统称为根文件系统，其中包括系统启动所必需的文件
 - 在根文件系统的最顶层目录中，每个目录都有其具体的目的和用途
@@ -38,7 +38,7 @@ Linux内核和根文件系统是完全独立的两个部分，但是在嵌入式
 - 根文件系统被挂载到VFS的/root上
 - VFS下面的root目录通过chroot操作隐藏了
 
-### 1-2 根文件系统的结构
+### 2-2 根文件系统的结构
 
 根文件系统的结构是树形结构，根文件系统挂载到Linux的根目录'/'上（同时也是Linux的VFS的根目录）。
 根目录'/'下通常包含了众多子文件和目录，其中有一些是系统预定义的，其中有一些是用户自己定义的。
@@ -70,9 +70,9 @@ Linux内核和根文件系统是完全独立的两个部分，但是在嵌入式
 |**/usr**|**一般存放由用户自由添加的程序或者开源库以及各种不常用的命令等，是共享和制只读的**|
 |/var|一些变化的实例和工具等，存放可变数据，如一些系统日志文件等|
 
-### 1-3 根文件系统关键目录的内容
+### 2-3 根文件系统关键目录的内容
 
-#### 1-3-1 etc目录
+#### 2-3-1 etc目录
 
 /etc目录包含很多文件.许多网络配置文件也在/etc 中.
 
@@ -84,22 +84,22 @@ $\left.\begin{matrix}/etc/rc\\ /etc/rc.d\\ /etc/rc*.d \end{matrix}\right\}启动
 
 $\left.\begin{matrix}/etc/profile \\ /etc/csh.login\\ /etc/csh.cshrc   \end{matrix}\right\} 登录或启动时Bourne或Cshells执行的文件.这允许系统管理员为所有用户建立全局缺省环境$
 
-#### 1-3-2 bin目录
+#### 2-3-2 bin目录
 
 bin为binary的简写，主要放置系统的必备执行文件，例如:
 cat、cp、chmod df、dmesg、gzip、kill、ls、mkdir、more、mount、rm、su、tar等。
 
-#### 1-3-3 /usr/bin目录
+#### 2-3-3 /usr/bin目录
 
 主要放置应用程序工具的必备执行文件，例如：
 c++、g++、gcc、chdrv、diff、dig、du、eject、elm、free、gnome*、 gzip、htpasswd、kfm、ktop、last、less、locale、m4、make、man、mcopy、ncftp、 newaliases、nslookup passwd、quota、smb*、wget等。
 
-#### 1-3-4 sbin目录
+#### 2-3-4 sbin目录
 
 主要放置系统管理的必备程序，例如:
 cfdisk、dhcpcd、dump、e2fsck、fdisk、halt、ifconfig、ifup、 ifdown、init、insmod、lilo、lsmod、mke2fs、modprobe、quotacheck、reboot、rmmod、 runlevel、shutdown等
 
-#### 1-3-5 /usr/sbin目录
+#### 2-3-5 /usr/sbin目录
 
 主要放置网路管理的必备程序，例如:
 dhcpd、httpd、imap、in.*d、inetd、lpd、named、netconfig、nmbd、samba、sendmail、squid、swap、tcpd、tcpdump等

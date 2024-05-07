@@ -2,7 +2,8 @@
 
 首先，`Shift + Ctrl + P`打开VSCode配置输入`>c/c++`。
 选择如下选项：
-![编辑配置(UI)](../photos/Edit%20Configurations%20(UI).png "编辑配置(UI)")
+![编辑配置(UI)](../Photos/Edit_Configurations%20(UI).png "编辑配置(UI)")
+
 选择后，VSCode会自动生成.vscode文件夹和c_cpp_properties.json配置文件，打开配置文件，删除内同并将如下代码粘贴进去。
 
 ```json
@@ -35,7 +36,7 @@
 
 * `includePath`
     在STM32Cube IDE project -> properties下找到，并全部更换。
-    ![IncludePath](../photos/IncludePath.png "IncludePath")
+    ![IncludePath](../Photos/IncludePath.png "IncludePath")
     全部复制后若报错，那么请注意看路径是什么，将鼠标放到路径上面就知道目前的路径是什么了，简单观察一下左侧文件夹目录和路径，并思考一下就知道到底应该是哪个路径了。
 * `defines`
     更改为自己的芯片版本

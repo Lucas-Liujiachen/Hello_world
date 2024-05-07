@@ -5,9 +5,9 @@
 **半导体三极管(Bipolar Junction Transistor)**，也称双极型晶体管、晶体三极管，英文缩写BJT。
 它是由两个PN结构成，三条引线分别称为 **发射极e （Emitter）、 基极b (Base)和 集电极c (Collector)**
 示意图如下：
-![两种三极管](../photos/triode.png)
+![两种三极管](./Photos/triode.png)
 三极管的工作状态称为**正偏**，正偏的逻辑是电流从P流向N
-因此两种三极管原理可以划分为如下![两种三极管](../photos/NPN_and_PNP.png)
+因此两种三极管原理可以划分为如下![两种三极管](./Photos/NPN_and_PNP.png)
 
 > 三极管的三种工作状态
 >
