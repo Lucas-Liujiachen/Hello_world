@@ -50,11 +50,11 @@ Bitbake构建的第一步就是解析Metadata基本配置文件。
 * conf：这个文件夹下的`layer.conf`文件定义了该metadata中使用哪些 .bb、.bbappend文件参与构建嵌入式Linux系统。
 * recipes-xxx：这个文件夹下有许多的 .bb、.bappend文件，这些文件定义了构建嵌入式Linux系统需要的软件包或源码等，主要包括：
 
-> 软件包的基本信息：作者、主页、License等
->版本信息
->依赖文件
->从哪下载以及如何下载软件包
->软件包补丁信息:是否需要补丁、补丁下载地址及方式等
+> 软件包的基本信息：作者、主页、License等  
+>版本信息  
+>依赖文件  
+>从哪下载以及如何下载软件包  
+>软件包补丁信息:是否需要补丁、补丁下载地址及方式等  
 >如何配置、如何编译软件包、安装位置等
 
 #### 3-1-3 小结
@@ -75,4 +75,4 @@ Bitbake解析了Metadata基本配置之后，Bitbake会根据build/conf/bblayers
 
 BitBake构建系统时，都会分为多个任务执行，例如：fetch, unpack, patch, configure以及compile 。对于构建系统所使用的主机是多核的情况，BitBake内部会对各任务的依赖关系进行处理，不需要用户干预。
 
-![基本的bb文件的task执行流](../photos/Basic_bb_file_execution_flow.png)
+![基本的bb文件的task执行流](./Photos/Basic_bb_file_execution_flow.png)

@@ -12,7 +12,7 @@ export https_proxy='<https://165.225.112.14:10015/>'
 
 .bashrc文件隐藏在了用户目录下，可以使用如下命令
 
-> `$ ls -a`
+> `$ ls -a`  
 
 ![找到.bashrc文件](../Photos/Find_bashrc.png)
 
@@ -20,11 +20,11 @@ export https_proxy='<https://165.225.112.14:10015/>'
 
 进入.bashrc文件，在文件中设置如下环境变量
 
-> `export http_proxy='http://myproxy.example.com:1080/'`
-> `export https_proxy='https://myproxy.example.com:1080/'`
-> `export ftp_proxy='http://myproxy.example.com:1080/'`
-> `export ALL_PROXY='socks://myproxy.example.com:1080/'`
-> `export all_proxy='socks://myproxy.example.com:1080/'`
+> `export http_proxy='http://myproxy.example.com:1080/'`  
+> `export https_proxy='https://myproxy.example.com:1080/'`  
+> `export ftp_proxy='http://myproxy.example.com:1080/'`  
+> `export ALL_PROXY='socks://myproxy.example.com:1080/'`  
+> `export all_proxy='socks://myproxy.example.com:1080/'`  
 > `export no_proxy='example.com'`
 
 NOTE:
