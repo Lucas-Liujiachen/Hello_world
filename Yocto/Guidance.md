@@ -5,7 +5,6 @@
 1. 请确保虚拟机被分配了至少600G的存储空间。[VMware更改虚拟机存储空间](./Problem/More_disk_space.md)
 2. 由于bitbake涉及下载内容，请确保虚拟机已经打开代理，从而加快bitbake。
    (加了代理都要下载将近一天，不加下到下辈子吧！)[如何为虚拟机的bash设置代理](./Problem/Bash_Proxy.md)
-3. df
 
 ## 步骤
 
