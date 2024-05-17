@@ -1,5 +1,7 @@
 # 解决VSCode编辑Cube IDE路径报错飘红问题
 
+[返回目录](../Index.md)
+
 首先，`Shift + Ctrl + P`打开VSCode配置输入`>c/c++`。
 选择如下选项：
 ![编辑配置(UI)](../Photos/Edit_Configurations%20(UI).png "编辑配置(UI)")

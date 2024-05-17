@@ -1,11 +1,14 @@
 # GitHub连接超时
 
+[返回目录](../Index.md)
+
 GitHub连接超时系DNS污染造成,导致很多时候push等操作无法正常运行。
 
 ## 现象
 
 登录`github.com`，发现可以访问，但是使用cmd ping一下github发现失败了
 ![Time out](./Photos/Time_out.png)
+
 
 ## 解决
 

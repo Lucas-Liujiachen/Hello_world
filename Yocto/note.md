@@ -1,5 +1,8 @@
 # Yocto指北
 
+[返回目录](../Index.md)
+[下载指南](./Guidance.md)
+
 ## 一、简介
 
 在嵌入式产品开发中，通常需要定制自己的的Linux发行版，所谓的发行版，即根据自家产品的功能和特性定制bootloader、kernel、rootfs，最后得到这三个的镜像文件。
@@ -75,4 +78,4 @@ Bitbake解析了Metadata基本配置之后，Bitbake会根据build/conf/bblayers
 
 BitBake构建系统时，都会分为多个任务执行，例如：fetch, unpack, patch, configure以及compile 。对于构建系统所使用的主机是多核的情况，BitBake内部会对各任务的依赖关系进行处理，不需要用户干预。
 
-![基本的bb文件的task执行流](./Photos/Basic_bb_file_execution_flow.png)
+![bitbake中基于task的执行流](./Photos/Basic_bb_file_execution_flow.png)

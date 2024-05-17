@@ -1,5 +1,7 @@
 # Bash_Proxy
 
+[返回](../Guidance.md)
+
 ## 概括
 
 要找到bash的代理然后更改~/.bashrc文件增加如下代理（根据自己的代理设置），就可以使用公司内网快速的进行bitbake命令了
