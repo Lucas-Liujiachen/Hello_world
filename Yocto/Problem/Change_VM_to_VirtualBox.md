@@ -1,5 +1,7 @@
 # 使用Virtual Box打开VMware的虚拟机
 
+[返回](../Guidance.md)
+
 ## 下载并打开一个Virtual Box
 
 ![打开Virtual Box](../Photos/Open_VB.png)

@@ -1,10 +1,19 @@
 # Yocto下载指北
 
-## 下载前设置
+[返回笔记](./note.md)
 
-1. 请确保虚拟机被分配了至少600G的存储空间。[VMware更改虚拟机存储空间](./Problem/More_disk_space.md)
+## 可能会遇到的问题
+
+1. 请确保虚拟机被分配了至少600G的存储空间。
+   [VMware更改虚拟机存储空间](./Problem/More_disk_space.md)
 2. 由于bitbake涉及下载内容，请确保虚拟机已经打开代理，从而加快bitbake。
-   (加了代理都要下载将近一天，不加下到下辈子吧！)[如何为虚拟机的bash设置代理](./Problem/Bash_Proxy.md)
+   (加了代理都要下载将近一天，不加下到下辈子吧！)
+   [如何为虚拟机的bash设置代理?](./Problem/Bash_Proxy.md)
+3. 更换VMware到VirtualBox
+   [更换虚拟机软件](./Problem/Change_VM_to_VirtualBox.md)
+4. 通过U-boot挂载虚拟机上的rootfs来验证生成的rootfs是否可行
+   [验证rootfs](./Problem/Mount_rootfs_from_VM.md)
+5. [使用WSL 2，创建 Yocto 项目开发环境](./Problem/Use_WSL2_to_create_Yocto.md)
 
 ## 一、构建poky步骤（可以用来测试下载情况如何）
 
@@ -118,7 +127,7 @@ $git config --global user.name "Your Name"
 $git config --global user.email "Your Email"
 ```
 
-### 准备i.MX Yocto工程
+### 准备 i. MX Yocto工程
 
 创建一个工程目录
 
