@@ -1,6 +1,6 @@
 # 使用WSL 2创建 Yocto 项目开发环境
 
-[返回](../Guidance.md)
+[返回](./Index.md)
 
 使用适用于 Linux 的 Windows 子系统 (WSL 2)，你可以创建一个 Yocto 项目开发环境，以便在 Windows 上进行构建。你可以在 Windows 内部设置 Linux 发行版，并在其中使用 Yocto 项目进行开发。
 

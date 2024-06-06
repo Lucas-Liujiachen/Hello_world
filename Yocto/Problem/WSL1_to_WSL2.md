@@ -24,7 +24,10 @@ Microsoft Windows [版本 10.0.19045.4291]
 ## 设置 WSL 2 为默认版本（可选）
 
 使用快捷键`win + x`以管理员身份打开Powershell并运行如下命令：
-`wsl --set-default-version 2`
+
+```bash
+wsl --set-default-version 2
+```
 
 ## 将现有的 WSL 1 发行版转换为 WSL 2
 

@@ -1,7 +1,7 @@
 # Yocto指北
 
 [返回目录](../Index.md)
-[下载指南](./Guidance.md)
+[下载指南](./Download_Guidance.md)
 
 ## 一、简介
 

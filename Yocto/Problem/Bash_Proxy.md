@@ -1,6 +1,6 @@
 # Bash_Proxy
 
-[返回](../Guidance.md)
+[返回](./Index.md)
 
 ## 概括
 
@@ -14,7 +14,9 @@ export https_proxy='<https://165.225.112.14:10015/>'
 
 .bashrc文件隐藏在了用户目录下，可以使用如下命令
 
-> `$ ls -a`  
+```bash
+ls -a
+```
 
 ![找到.bashrc文件](../Photos/Find_bashrc.png)
 
@@ -22,12 +24,14 @@ export https_proxy='<https://165.225.112.14:10015/>'
 
 进入.bashrc文件，在文件中设置如下环境变量
 
-> `export http_proxy='http://myproxy.example.com:1080/'`  
-> `export https_proxy='https://myproxy.example.com:1080/'`  
-> `export ftp_proxy='http://myproxy.example.com:1080/'`  
-> `export ALL_PROXY='socks://myproxy.example.com:1080/'`  
-> `export all_proxy='socks://myproxy.example.com:1080/'`  
-> `export no_proxy='example.com'`
+```bash
+export http_proxy='http://myproxy.example.com:1080/'
+export https_proxy='https://myproxy.example.com:1080/'  
+export ftp_proxy='http://myproxy.example.com:1080/'
+export ALL_PROXY='socks://myproxy.example.com:1080/'  
+export all_proxy='socks://myproxy.example.com:1080/'  
+export no_proxy='example.com'
+```
 
 NOTE:
 一般只需要增加前两个"http"和"https"就可以了，别的可以不加。

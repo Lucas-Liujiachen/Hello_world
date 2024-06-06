@@ -1,8 +1,10 @@
-# 公共电脑
+# 杂记
 
 [返回目录](../Index.md)
 
-密码：Goldway_SW03
+## 公共电脑密码
+
+密码：Goldway_SW04
 
 ## 升级软件包的步骤
 
@@ -14,3 +16,7 @@
 ## WLAN-PUB密码
 
 @Philips20111
+
+## RS232引脚定义
+
+![RS232引脚定义](./Photos/RS232%20Pin%20Definition.png)

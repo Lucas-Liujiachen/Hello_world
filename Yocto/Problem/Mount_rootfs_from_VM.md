@@ -1,6 +1,6 @@
 # 在板子上的U-boot挂载虚拟机上的rootfs
 
-[返回](../Guidance.md)
+[返回](./Index.md)
 
 ## 一、安装NFS
 
@@ -12,24 +12,40 @@ NFS使用客户端-服务端模型，其中客户端计算机通过网络连接�
 
 ## 1-2 安装NFS
 
-**下载**
-`sudo apt-get install nfs-kernel-server`
+**下载**:
 
-**重启NFS服务**
-`sudo systemctl restart nfs-server`
+```bash
+sudo apt-get install nfs-kernel-server
+```
 
-**查看NFS服务器状态**
-`systemctl status nfs-server`
+**重启NFS服务**:
+
+```bash
+sudo systemctl restart nfs-server
+```
+
+**查看NFS服务器状态**:
+
+```bash
+systemctl status nfs-server
+```
+
 如下看到服务器Active说明NFS服务器已经启动了。
 ![查看NFS服务器状态](../Photos/Status_of_nfs-server.png)
 
 ## 二、修改NFS服务器配置文件
 
-**打开配置文件**
-`sudo vi /etc/exports`
+**打开配置文件**:
+
+```bash
+sudo vi /etc/exports
+```
 
 在文件中最后一行加入如下语句：
-`/srv/nfs/rootfs *(rw,sync,no_subtree_check,no_root_squash)`
+
+```bash
+/srv/nfs/rootfs *(rw,sync,no_subtree_check,no_root_squash)
+```
 
 ![修改配置文件](../Photos/Modify_nfs_config.png)
 语句含义：
@@ -48,14 +64,20 @@ NFS使用客户端-服务端模型，其中客户端计算机通过网络连接�
 ### 3-1 查看虚拟机的IP地址
 
 输入如下命令查看虚拟机的IP地址
-`ifconfig`
+
+```bash
+ifconfig
+```
 
 ![虚拟机IP](../Photos/VM_IP.png)
 
 ### 3-2 挂载
 
 输入如下指令进行挂载
-`sudo mount -t nfs 192.168.1.103:/srv/nfs/rootfs /mnt/nfs_rootfs`
+
+```bash
+sudo mount -t nfs 192.168.1.103:/srv/nfs/rootfs /mnt/nfs_rootfs
+```
 
 1. mount: Linux 系统中用于挂载文件系统的命令。
 2. -t nfs: 指定文件系统类型为 NFS。-t 是 mount 命令的选项之一，用于指定文件系统类型，而 nfs 就是 NFS 文件系统的类型。
@@ -76,8 +98,10 @@ NFS使用客户端-服务端模型，其中客户端计算机通过网络连接�
 
 ### 4-2 配置U-boot环境变量
 
-`u-boot => setenv mmcroot /dev/nfs nfsroot=192.168.1.103:/srv/nfs/rootfs,v3,tcp rw ip=dhcp`
-`u-boot => boot`
+```bash
+u-boot => setenv mmcroot /dev/nfs nfsroot=192.168.1.103:/srv/nfs/rootfs,v3,tcp rw ip=dhcp
+u-boot => boot
+```
 
 由于Yocto构建时使用普通用户进行的，所以生成的rootfs的所有者和组都是普通用户而不是root。在nfs挂载前务必chown -R root:root /srv/nfs/rootfs，否则kernel不能正常启动会进入维护模式。
 

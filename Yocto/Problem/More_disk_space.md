@@ -1,11 +1,15 @@
 # 扩展虚拟机磁盘空间——Linux分区利器：GParted
 
-[返回](../Guidance.md)
+[返回](./Index.md)
 
 ## 查看磁盘使用情况
 
 使用如下指令查看目前虚拟机磁盘使用情况
-> `$ df -lh`  
+
+```bash
+df -lh
+```
+
 ![磁盘使用情况](../Photos/Situation_of_disk.png)
 
 ## 为虚拟机分配磁盘空间
@@ -21,8 +25,10 @@
 
 ## 安装GParted
 
-> `$ sudo apt update`  
-> `$ sudo apt install gparted`
+```bash
+sudo apt update
+sudo apt install gparted
+```
 
 ## 启动GParted
 
@@ -53,9 +59,11 @@
 
 ### 5 使用root权限打开中断，重新挂载文件夹目录的读写权限
 
-> `sudo -i`  
-> `mount -o remount -rw /`  
-> `mount -o remount -rw /var/snap/firefox/common/host-hunspell`  
+```bash
+sudo -i
+mount -o remount -rw / 
+mount -o remount -rw /var/snap/firefox/common/host-hunspell 
+```
 
 ### 6 刷新GParted中的设备之后，就可以调整了
 
