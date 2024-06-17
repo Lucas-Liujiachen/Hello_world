@@ -34,7 +34,7 @@ makefile文件一般命名为makefile或者Makefile。
 
 ### 2. 基本规则
 
-```makefile
+```plaintext
 目标：依赖
     命令     #其中命令必须以TAB键开始
 ```

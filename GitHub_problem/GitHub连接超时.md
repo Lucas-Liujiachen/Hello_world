@@ -9,7 +9,6 @@ GitHub连接超时系DNS污染造成,导致很多时候push等操作无法正常
 登录`github.com`，发现可以访问，但是使用cmd ping一下github发现失败了
 ![Time out](./Photos/Time_out.png)
 
-
 ## 解决
 
 * 打开网站[https://www.ipaddress.com/ip-lookup](https://www.ipaddress.com/ip-lookup),并在框内输入域名，来查询对应的IP地址：

@@ -134,6 +134,7 @@ git pull origin
 下载firmware-imx
 
 ```bash
+cd ..
 wget http://www.freescale.com/lgfiles/NMG/MAD/YOCTO/firmware-imx-8.1.bin
 chmod +x firmware-imx-8.1.bin
 sudo ./firmware-imx-8.1.bin --auto-accept

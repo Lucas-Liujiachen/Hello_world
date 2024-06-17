@@ -22,4 +22,4 @@
 ## 其他
 
 [缩写](./Abbreviation/abbreviation.md)
-[Linux指令解析](./Linux_Command/note.md)
+[Linux](./00_Linux/index.md)

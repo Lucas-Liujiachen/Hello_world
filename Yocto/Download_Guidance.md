@@ -1,7 +1,7 @@
 # Yocto下载指北
 
-[返回](./note.md)
-[遇到的问题](./Problem/Index.md)
+[返回](./note.md)  
+[遇到的问题](./Problem/Index.md)  
 
 ## 一、构建poky步骤（可以用来测试下载情况如何）
 

@@ -8,7 +8,7 @@
 虽然所有 Windows 11 和 Windows Server 2022 版本都支持 WSL 2，但 Windows 10 和 Windows Server 2019 的首批版本并不支持。请查看Windows 10 和Windows Server 2019的最低版本号。
 要检查你正在运行哪个版本，你可以在 Windows 上打开命令提示符并执行命令“ver”：
 
-```command
+```powershell
 C:\Users\320248990>  ver
 Microsoft Windows [版本 10.0.19045.4291]
 ```
@@ -17,7 +17,7 @@ Microsoft Windows [版本 10.0.19045.4291]
 
 **3.检查 WSL 2 正在使用哪个 Linux 发行版**：使用快捷键`win + x`打开 Windows PowerShell 并运行：
 
-```command
+```powershell
 C:\Users\320248990>wsl -l -v
   NAME            STATE           VERSION
 * Ubuntu-22.04    Stopped         2
@@ -28,7 +28,7 @@ C:\Users\320248990>wsl -l -v
 
 * **查找 VHDX 文件的位置：以管理员身份打开 Powershell 并运行**：
   
-  ```command
+  ```powershell
   PS C:\Users\320248990> Get-AppxPackage -Name "*Ubuntu*" | Select PackageFamilyName
 
   PackageFamilyName
@@ -38,8 +38,9 @@ C:\Users\320248990>wsl -l -v
 
   在以下路径上替换 PackageFamilyName 和你的用户来查找 VHDX 文件：
 
-  ```command
-  PS C:\Users\320248990> ls C:\Users\320248990\AppData\Local\Packages\CanonicalGroupLimited.Ubuntu22.04LTS_79rhkp1fndgsc\LocalState
+  ```powershell
+  PS C:\Users\320248990> ls 
+  C:\Users\320248990\AppData\Local\Packages\CanonicalGroupLimited.Ubuntu22.04LTS_79rhkp1fndgsc\LocalState
     
     目录: C:\Users\320248990\AppData\Local\Packages\CanonicalGroupLimited.Ubuntu22.04LTS_79rhkp1fndgsc\LocalState
 
@@ -54,9 +55,10 @@ C:\Users\320248990>wsl -l -v
 * **使用 Windows Powershell 优化 VHDX 文件**：
   要使用optimize-vhd以下 cmdlet，请首先在 Windows 上安装 Hyper-V 选项。然后，以管理员身份打开 Windows Powershell 来优化 VHDX 文件：
   
-  ```command
+  ```powershell
   PS C:\Users\320248990> wsl --shutdown
-  PS C:\Users\320248990> optimize-vhd -Path C:\Users\320248990\AppData\Local\Packages\CanonicalGroupLimited.Ubuntu22.04LTS_79rhkp1fndgsc\LocalState\ext4.vhdx -Mode full
+  PS C:\Users\320248990> optimize-vhd -Path
+  C:\Users\320248990\AppData\Local\Packages\CanonicalGroupLimited.Ubuntu22.04LTS_79rhkp1fndgsc\LocalState\ext4.vhdx -Mode full
   ```
 
   > 优化 VHDX 文件时应该显示进度条，并且存储现在应该正确反映在 Windows 资源管理器上。
