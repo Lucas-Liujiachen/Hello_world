@@ -1,6 +1,19 @@
-# U-boot的编译与烧录（非Yocto环境，iMX8M NANO）
+# U-boot的编译与烧录（iMX8M NANO）
 
 [返回](./Index.md)
+
+> 使用Yocto单独编译可以使用一下指令
+
+```bash
+#bitbake命令单独编译u-boot：
+bitbake -c compile -f u-boot-imx
+bitbake -c deploy -f u-boot-imx #部署编译生成的u-boot镜像到deploy
+
+#bitbake命令单独编译kernel：
+bitbake -c compile -f linux-imx #编译内核
+bitbake -c deploy -f linux-imx #部署内核镜像到deploy目录
+
+```
 
 ## 序言：安装Uuu
 

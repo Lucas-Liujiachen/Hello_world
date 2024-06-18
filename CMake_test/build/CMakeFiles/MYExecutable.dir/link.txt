@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\MYExecutable.dir/objects.a
-C:\Users\320248990\AppData\Local\Programs\mingw64\bin\ar.exe qc CMakeFiles\MYExecutable.dir/objects.a @CMakeFiles\MYExecutable.dir\objects1.rsp
-C:\Users\320248990\AppData\Local\Programs\mingw64\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\MYExecutable.dir/objects.a -Wl,--no-whole-archive -o MYExecutable.exe -Wl,--out-implib,libMYExecutable.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\MYExecutable.dir\linkLibs.rsp

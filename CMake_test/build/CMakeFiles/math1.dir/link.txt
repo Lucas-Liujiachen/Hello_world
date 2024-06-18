@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\math1.dir/objects.a
-C:\Users\320248990\AppData\Local\Programs\mingw64\bin\ar.exe qc CMakeFiles\math1.dir/objects.a @CMakeFiles\math1.dir\objects1.rsp
-C:\Users\320248990\AppData\Local\Programs\mingw64\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\math1.dir/objects.a -Wl,--no-whole-archive -o math1.exe -Wl,--out-implib,libmath1.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\math1.dir\linkLibs.rsp
