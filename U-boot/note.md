@@ -1,6 +1,7 @@
 # U-boot学习笔记
 
 [返回目录](../Index.md)
+[扩展知识](./Extended_knowledge_points/Index.md)
 
 ## U-boot启动流程
 
@@ -23,63 +24,65 @@ CPU可以直接读取Flash得到指令，而不需要将指令加载到RAM（内
 
 ## U-boot源码结构
 
-> ├─.
-    ├─arch&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// 架构相关
-    │  ├─arm
-    │  │  ├─cpu
-    │  │  │  ├─armv7
-    │  │  │  │  ├─mx6
-    │  │  ├─dts
-    │  │  │  └─include
-    │  │  ├─include
-    │  │  │  ├─asm
-    │  │  │  │  ├─arch-armv7
-    │  │  │  │  ├─arch-imx
-    │  │  │  │  ├─arch-imx8
-    │  │  │  │  ├─arch-imx8m
-    │  │  │  └─debug
-    │  │  ├─lib
-    │  │  ├─mach-rockchip
-    │  │  |  ├─rk3036
-    ├─board&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// 单板相关
-    │  ├─freescale
-    │  │  ├─common
-    │  │  │  └─p_corenet
-    │  │  ├─imx8mm_evk
-    │  │  ├─imx8mn_evk
-    │  │  ├─imx8mp_evk
-    │  │  ├─imx8mq_evk
-    │  │  ├─mx6ullevk
-    ├─cmd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// 通用命令
-    │  ├─arm
-    │  ├─mvebu
-    │  ├─riscv
-    │  ├─sandbox
-    │  └─x86
-    ├─common&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// 通用文件
-    │  ├─eeprom
-    │  ├─init
-    │  └─spl
-    ├─configs
-    ├─disk
-    ├─drivers&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// 驱动
-    ├─dts
-    ├─fs&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// 文件系统
-    │  ├─btrfs
-    │  │  ├─common
-    │  │  ├─crypto
-    │  │  └─kernel-shared
-    │  ├─cbfs
-    │  ├─cramfs
-    │  ├─erofs
-    │  ├─ext4
-    │  ├─fat
-    │  ├─jffs2
-    │  ├─sandbox
-    │  ├─squashfs
-    │  ├─ubifs
-    │  ├─yaffs2
-    │  └─zfs
-    ├─include
-    ├─lib&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// 库
-    ├─net&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// 网络协议
+```plaintext
+├─.
+  ├─arch                        // 架构相关
+  │  ├─arm
+  │  │  ├─cpu
+  │  │  │  ├─armv7
+  │  │  │  │  ├─mx6
+  │  │  ├─dts
+  │  │  │  └─include
+  │  │  ├─include
+  │  │  │  ├─asm
+  │  │  │  │  ├─arch-armv7
+  │  │  │  │  ├─arch-imx
+  │  │  │  │  ├─arch-imx8
+  │  │  │  │  ├─arch-imx8m
+  │  │  │  └─debug
+  │  │  ├─lib
+  │  │  ├─mach-rockchip
+  │  │  |  ├─rk3036
+  ├─board                       // 单板相关
+  │  ├─freescale
+  │  │  ├─common
+  │  │  │  └─p_corenet
+  │  │  ├─imx8mm_evk
+  │  │  ├─imx8mn_evk
+  │  │  ├─imx8mp_evk
+  │  │  ├─imx8mq_evk
+  │  │  ├─mx6ullevk
+  ├─cmd                         // 通用命令
+  │  ├─arm
+  │  ├─mvebu
+  │  ├─riscv
+  │  ├─sandbox
+  │  └─x86
+  ├─common                      // 通用文件
+  │  ├─eeprom
+  │  ├─init
+  │  └─spl
+  ├─configs
+  ├─disk
+  ├─drivers                     // 驱动
+  ├─dts
+  ├─fs                          // 文件系统
+  │  ├─btrfs
+  │  │  ├─common
+  │  │  ├─crypto
+  │  │  └─kernel-shared
+  │  ├─cbfs
+  │  ├─cramfs
+  │  ├─erofs
+  │  ├─ext4
+  │  ├─fat
+  │  ├─jffs2
+  │  ├─sandbox
+  │  ├─squashfs
+  │  ├─ubifs
+  │  ├─yaffs2
+  │  └─zfs
+  ├─include
+  ├─lib                         // 库
+  ├─net                         // 网络协议
+```
