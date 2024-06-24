@@ -1,6 +1,6 @@
 # Linux 命令
 
-[返回目录](./index.md)
+[返回目录](./Index.md)
 
 ## df 命令
 

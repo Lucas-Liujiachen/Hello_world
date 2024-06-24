@@ -22,4 +22,8 @@
 ## 其他
 
 [缩写](./Abbreviation/abbreviation.md)
-[Linux](./00_Linux/index.md)
+
+## 学习笔记目录1
+
+1. [Linux](./00_Linux/Index.md)
+2. [Compile](./01_Compile/Index.md)
