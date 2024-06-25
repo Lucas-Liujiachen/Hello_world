@@ -1,7 +1,7 @@
 # U-boot学习笔记
 
 [返回目录](../Index.md)  
-[扩展知识1-ATF](./ATF/Index.md)
+[扩展知识1-ATF](./ATF/ATF.md)
 
 ## U-boot启动流程
 

@@ -760,7 +760,9 @@ bl1_apiakey 这个数组里面存储了 APIAKey_EL1 密钥的完整部分。
 `image_id = bl1_plat_get_next_image_id();`：获得下一步平台要加载和执行的 image。  
 接下里如果发现需要加载 bl2 ，那么调用函数`bl1_load_bl2()`将 bl2 加载到内存中。  
 如果不是，那么调用`NOTICE`函数打印一条提示信息，表示固件更新程序启动。  
-`bl1_prepare_next_image(image_id);`：调用这个函数，说明 bl1 阶段基本执行完毕，开始对下一个要执行的image进行一些准备。包含了：获取镜像描述符、获取入口点信息、设置处理器状态寄存器、平台的特定操作、初始化处理器上下文、非安全镜像处理、刷新上下文并标记镜像执行状态、打印入口点信息。  
+
+`bl1_prepare_next_image(image_id);`：调用这个函数，说明 bl1 阶段基本执行完毕，开始对下一个要执行的image进行一些准备。包含了：获取镜像描述符、获取入口点信息、设置处理器状态寄存器、平台的特定操作、初始化处理器上下文、非安全镜像处理、刷新上下文并标记镜像执行状态、打印入口点信息。这里会将 bl2 的入口地址写道 elr_el3 寄存器。方便 bl1 执行完毕后，直接跳转到 bl2 的入口。  
+
 `console_flush();`：函数用于刷新控制台输出缓冲区，确保待输出的内容会及时显示在控制台上。
 
 ## 1.6 pauth_disable_el3 源码解析
@@ -843,7 +845,7 @@ str   x17, [sp, #CTX_EL3STATE_OFFSET + CTX_RUNTIME_SP]
 
 `CTX_RUNTIME_SP`：用于表示特定上下文中的运行时堆栈指针（Stack Pointer）的偏移量。在保存上下文时，通常不仅要保存通用寄存器的值，还要保存堆栈指针的值，以便恢复时能够准确地恢复执行状态。在上下文切换时，保存和恢复堆栈指针的值是非常重要的。CTX_RUNTIME_SP 表示这个堆栈指针在上下文结构中的具体位置。
 
-`str x17, [sp, #CTX_EL3STATE_OFFSET + CTX_RUNTIME_SP]`：表示将寄存器 x17 中的值存到内存中，位置为栈顶指针 sp 偏移 CTX_EL3STATE_OFFSET + CTX_RUNTIME_SP 后对应的位置。
+`str x17, [sp, #CTX_EL3STATE_OFFSET + CTX_RUNTIME_SP]`：表示将寄存器 x17 中的值存到内存中，位置为栈顶指针 sp 偏移CTX_EL3STATE_OFFSET + CTX_RUNTIME_SP 后对应的位置。
 
 ---
 
@@ -855,9 +857,9 @@ msr   spsr_el3, x16
 msr   elr_el3, x17
 ```
 
-`ldr   x18, [sp, #CTX_EL3STATE_OFFSET + CTX_SCR_EL3]`：把偏移后内存地址内存的值加载到 x18 中。
+`ldr   x18, [sp, #CTX_EL3STATE_OFFSET + CTX_SCR_EL3]`：从堆栈中加载保存的 scr_el3 值到 x18。
 
-`ldp   x16, x17, [sp, #CTX_EL3STATE_OFFSET + CTX_SPSR_EL3]`：将 x16 和 x17 两个寄存器中的值，存到对应的偏移地址的内存中。
+`ldp   x16, x17, [sp, #CTX_EL3STATE_OFFSET + CTX_SPSR_EL3]`：从堆栈中加载保存的 spsr_el3 和 elr_el3 到 x16 和 x17。
 
 ```asm
 msr   scr_el3, x18
@@ -883,16 +885,20 @@ msr   elr_el3, x17
 #endif
 ```
 
+`#if IMAGE_BL31 && DYNAMIC_WORKAROUND_CVE_2018_3639`：检查是否启用了动态修复。
+
 `CTX_CVE_2018_3639_OFFSET`：这个常量通常用于表示存储了特定上下文数据结构中，用于存储有关"Speculative Store Bypass (SSB)"漏洞的修复信息的偏移量。
 
 `CTX_CVE_2018_3639_DISABLE`：这个常量通常用于指示是否禁用或启用有关"Speculative Store Bypass (SSB)"漏洞的修复措施。
 > 注："Speculative Store Bypass (SSB)"，也称为"Variant 4"漏洞，是一种影响现代处理器的侧信道攻击漏洞。它与其他类似的漏洞（如Meltdown和Spectre）一样，利用了处理器中的 speculative execution（预测执行）机制来实现攻击。
 
-`ldr x17, [sp, #CTX_CVE_2018_3639_OFFSET + CTX_CVE_2018_3639_DISABLE]`：将对应偏移地址的内存加载到 x17 寄存器中。
+`ldr x17, [sp, #CTX_CVE_2018_3639_OFFSET + CTX_CVE_2018_3639_DISABLE]`：从堆栈中加载 CVE-2018-3639 漏洞修复的禁用标志。。
 
 `cbz x17, 1f`：检查寄存器 x17 的值是否为零，如果是零，那么跳转到1处。这里的f是一个后缀，通常用来表示这是一个正向（forward）的标号，也就是距离当前指令位置最近的标号。
 
-`blr x17`：在 ARM64 架构中，blr 指令用于调用寄存器中保存的函数地址，并将下一条指令的地址保存到链接寄存器 lr 中，以便后续可以通过 ret 或 ret x30 指令返回调用点。这条指令执行后，程序控制流会转移到 x17 寄存器中存储的函数的入口地址，并且保存当前指令的地址到链接寄存器 lr 中，以便函数执行完毕后返回到调用点。
+`blr x17`：跳转到 x17 中的地址，执行动态修复代码。
+>注：
+>在 ARM64 架构中，blr 指令用于调用寄存器中保存的函数地址，并将下一条指令的地址保存到链接寄存器 lr 中，以便后续可以通过 ret 或 ret x30 指令返回调用点。这条指令执行后，程序控制流会转移到 x17 寄存器中存储的函数的入口地址，并且保存当前指令的地址到链接寄存器 lr 中，以便函数执行完毕后返回到调用点。
 
 ---
 
@@ -907,7 +913,7 @@ ldr   x30, [sp, #CTX_GPREGS_OFFSET + CTX_GPREG_LR]
 
 `CTX_GPREG_LR`：表示上下文数据结构中链接寄存器（Link Register，通常是用来保存函数调用的返回地址）的偏移量。在 ARM 架构中，通常用 LR 寄存器来保存 bl 指令后的返回地址。
 
-`ldr   x30, [sp, #CTX_GPREGS_OFFSET + CTX_GPREG_LR]`：将对应的偏移地址的内存加载到 x30 寄存器中。
+`ldr   x30, [sp, #CTX_GPREGS_OFFSET + CTX_GPREG_LR]`：将从堆栈中加载链接寄存器的值到 x30。
 
 ---
 
@@ -918,8 +924,19 @@ ldr   x30, [sp, #CTX_GPREGS_OFFSET + CTX_GPREG_LR]
    eret
 ```
 
-在 ARMv8-A 架构中，esb 指令是 "Exception Synchronization Barrier" 的缩写，用于确保异常处理程序在返回到低特权级别时，同步处理器状态。  
-eret是MIPS 处理器上的指令，用于从异常处理程序返回到用户程序或者上一个特权级别的执行状态。这里是指退出到上一个特权级别。
-这段代码中表示如果当前启动阶段为 bl31 或者 定义了 RAS_EXTENSION 的时候就执行 esb，退出回到低特权级。
+`#if IMAGE_BL31 && RAS_EXTENSION`：检查是否启用了 RAS 扩展。
+
+`esb`：执行错误同步屏障，确保所有错误状态已被处理（仅当启用了 RAS 扩展时执行）。
+
+`eret`：从异常处理返回到正常执行流。
+
+eret 指令会从当前的异常级别返回到较低的异常级别，并跳转到 ELR_EL3 寄存器中存储的地址。具体执行流程如下：
+
+1. 恢复状态：eret 会恢复 SPSR_EL3 中保存的程序状态寄存器内容，包括中断状态和处理器模式。
+2. 跳转到入口点：eret 会将控制权转移到 ELR_EL3 中存储的地址，该地址是在BL1中设置的BL2入口点地址。
+
 > 注：
-> 由于之前调用 bl1_main 函数时，已经为 bl2 的执行准备了环境，因此在最后eret时，貌似是恢复到原来的模式，实际上由于寄存器等的修改已经跳转到执行bl2。
+> 通过分析 bl1_main 函数及其调用的关键函数 bl1_load_bl2 和 bl1_prepare_next_image，可以看到：
+> BL2 的入口地址是在 bl1_load_bl2 函数中确定并保存的。
+> 在 bl1_prepare_next_image 函数中，这个入口地址被写入 elr_el3 寄存器。
+> 当 BL1 完成其任务并执行 eret 指令时，处理器会跳转到 elr_el3 中存储的地址，即 BL2 的入口地址，从而开始执行 BL2 的代码

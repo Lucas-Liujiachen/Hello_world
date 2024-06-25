@@ -1,6 +1,6 @@
 # ATF ARM可信固件
 
-[返回](./Index.md)
+[返回](../note.md)
 
 ## 简介
 
