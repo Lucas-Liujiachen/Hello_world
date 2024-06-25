@@ -6,13 +6,524 @@
 
 系统上电后首先会运行 SCP boot ROM，之后会跳转到 ATF 的 bl1 中继续执行。bl1 主要初始化 CPU，设定异常向量，将 bl2 的 image 加载到安全 RAM 中，然后跳转到 bl2 中进行执行。
 bl1 的主要代码存放在 bl1 目录中，bl1 的链接脚本是 bl1/bl1.ld.S 文件。其中 bl1 的入口函数是`bl1_entrypoint`。
+
+## 1.1 bl1.ld.S 链接脚本文件分析
+
 bl1/bl1.ld.S 文件制定了内存中各个段（如.data 、.text 、.bss 等）存放的位置和属性。
 
-## 1.1 bl1_entrypoint 源码分析
+### 1-1-1 源代码
+
+<details>
+   <summary>点击这里展开/收起代码块</summary>
+
+```asm
+OUTPUT_FORMAT(PLATFORM_LINKER_FORMAT)
+OUTPUT_ARCH(PLATFORM_LINKER_ARCH)
+ENTRY(bl1_entrypoint)
+
+MEMORY {
+    ROM (rx): ORIGIN = BL1_RO_BASE, LENGTH = BL1_RO_LIMIT - BL1_RO_BASE
+    RAM (rwx): ORIGIN = BL1_RW_BASE, LENGTH = BL1_RW_LIMIT - BL1_RW_BASE
+}
+
+SECTIONS
+{
+    . = BL1_RO_BASE;
+    ASSERT(. == ALIGN(PAGE_SIZE),
+           "BL1_RO_BASE address is not aligned on a page boundary.")
+
+#if SEPARATE_CODE_AND_RODATA
+    .text . : {
+        __TEXT_START__ = .;
+        *bl1_entrypoint.o(.text*)
+        *(.text*)
+        *(.vectors)
+        . = ALIGN(PAGE_SIZE);
+        __TEXT_END__ = .;
+     } >ROM
+
+     .ARM.extab . : {
+        *(.ARM.extab* .gnu.linkonce.armextab.*)
+     } >ROM
+
+     .ARM.exidx . : {
+        *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+     } >ROM
+
+    .rodata . : {
+        __RODATA_START__ = .;
+        *(.rodata*)
+
+        . = ALIGN(8);
+        __PARSER_LIB_DESCS_START__ = .;
+        KEEP(*(.img_parser_lib_descs))
+        __PARSER_LIB_DESCS_END__ = .;
+
+        . = ALIGN(8);
+        __CPU_OPS_START__ = .;
+        KEEP(*(cpu_ops))
+        __CPU_OPS_END__ = .;
+
+        __RODATA_END__ = .;
+    } >ROM
+#else
+    ro . : {
+        __RO_START__ = .;
+        *bl1_entrypoint.o(.text*)
+        *(.text*)
+        *(.rodata*)
+
+        . = ALIGN(8);
+        __PARSER_LIB_DESCS_START__ = .;
+        KEEP(*(.img_parser_lib_descs))
+        __PARSER_LIB_DESCS_END__ = .;
+
+        . = ALIGN(8);
+        __CPU_OPS_START__ = .;
+        KEEP(*(cpu_ops))
+        __CPU_OPS_END__ = .;
+
+        *(.vectors)
+        __RO_END__ = .;
+    } >ROM
+#endif
+
+    ASSERT(__CPU_OPS_END__ > __CPU_OPS_START__,
+           "cpu_ops not defined for this platform.")
+
+    . = BL1_RW_BASE;
+    ASSERT(BL1_RW_BASE == ALIGN(PAGE_SIZE),
+           "BL1_RW_BASE address is not aligned on a page boundary.")
+
+    .data . : ALIGN(16) {
+        __DATA_RAM_START__ = .;
+        *(.data*)
+        __DATA_RAM_END__ = .;
+    } >RAM AT>ROM
+
+    stacks . (NOLOAD) : {
+        __STACKS_START__ = .;
+        *(tzfw_normal_stacks)
+        __STACKS_END__ = .;
+    } >RAM
+
+    .bss : ALIGN(16) {
+        __BSS_START__ = .;
+        *(.bss*)
+        *(COMMON)
+        __BSS_END__ = .;
+    } >RAM
+
+    xlat_table (NOLOAD) : {
+        *(xlat_table)
+    } >RAM
+
+#if USE_COHERENT_MEM
+    coherent_ram (NOLOAD) : ALIGN(PAGE_SIZE) {
+        __COHERENT_RAM_START__ = .;
+        *(tzfw_coherent_mem)
+        __COHERENT_RAM_END_UNALIGNED__ = .;
+
+        . = ALIGN(PAGE_SIZE);
+        __COHERENT_RAM_END__ = .;
+    } >RAM
+#endif
+
+    __BL1_RAM_START__ = ADDR(.data);
+    __BL1_RAM_END__ = .;
+
+    __DATA_ROM_START__ = LOADADDR(.data);
+    __DATA_SIZE__ = SIZEOF(.data);
+
+    __BL1_ROM_END__ =  __DATA_ROM_START__ + __DATA_SIZE__;
+    ASSERT(__BL1_ROM_END__ <= BL1_RO_LIMIT,
+           "BL1's ROM content has exceeded its limit.")
+
+    __BSS_SIZE__ = SIZEOF(.bss);
+
+#if USE_COHERENT_MEM
+    __COHERENT_RAM_UNALIGNED_SIZE__ =
+        __COHERENT_RAM_END_UNALIGNED__ - __COHERENT_RAM_START__;
+#endif
+
+    ASSERT(. <= BL1_RW_LIMIT, "BL1's RW section has exceeded its limit.")
+}
+```
+
+</details>
+
+### 1-1-2 源码分析
+
+```asm
+OUTPUT_FORMAT(PLATFORM_LINKER_FORMAT)
+OUTPUT_ARCH(PLATFORM_LINKER_ARCH)
+ENTRY(bl1_entrypoint)
+```
+
+`OUTPUT_FORMAT(PLATFORM_LINKER_FORMAT)`：指定连接器生成的输出文件格式，例如 ELF、BIN 等。PLATFORM_LINKER_FORMAT 是一个宏定义，表示与平台相关的格式，可以通过在`plat`文件夹下的不同平台的`platform_def.h`中查看对应的设置，如果没有也可以使用`include/plat/common/common_def.h`中的默认配置。
+
+`OUTPUT_ARCH(PLATFORM_LINKER_ARCH)`：指定输出文件的目标架构，例如 ARM，x86等。PLATFORM_LINKER_ARCH 是一个宏定义，表示与平台相关的架构。可以通过在`plat`文件夹下的不同平台的`platform_def.h`中查看对应的设置，如果没有也可以使用`include/plat/common/common_def.h`中的默认配置。
+
+`ENTRY(bl1_entrypoint)`：指定程序的入口点，即程序开始执行的地址。这里是 bl1_entrypoint。
+
+---
+
+```asm
+MEMORY {
+    ROM (rx): ORIGIN = BL1_RO_BASE, LENGTH = BL1_RO_LIMIT - BL1_RO_BASE
+    RAM (rwx): ORIGIN = BL1_RW_BASE, LENGTH = BL1_RW_LIMIT - BL1_RW_BASE
+}
+```
+
+这段代码定义了内存布局。  
+`ROM(rx)`：定义了只读内存段，具有读(r)和执行(x)的权限，起始地址为`origin`，长度为`length`。
+
+`RAM(rwx)`：定义了读写内存段，具有读(r)、写(w)、执行(x)权限。
+
+其中`BL1_RO_BASE`、`BL1_RO_LIMIT`、`BL1_RW_BASE`、`BL1_RW_LIMIT`这四个宏定义都是与平台相关的定义。
+
+---
+
+**接下来的定义都是段的定义**  
+
+```asm
+SECTIONS
+{
+...
+}
+```
+
+这个标志表示段定义，其中的内容都是不同的段的设置。
+
+---
+
+```asm
+. = BL1_RO_BASE;
+    ASSERT(. == ALIGN(PAGE_SIZE),
+           "BL1_RO_BASE address is not aligned on a page boundary.")
+```
+
+`. = BL1_RO_BASE;`：表示将当前位置设置成`BL1_RO_BASE`，即只读内存段的起始地址。
+
+`ALIGN`：这是连接脚本的一个函数，用于将当前地址对齐到指定的边界。其传入的参数是一个整数，表示对齐的字节数。
+
+`PAGE_SIZE`：这个表示页面大小，通常为4KB(4096 bytes)。这是内存管理单元(MMU)使用的基本分配单元。具体值可以通过宏定义来指定。
+
+`ASSERT(. == ALIGN(PAGE_SIZE),"BL1_RO_BASE address is not aligned on a page boundary.")`：这个断言就是判断当前位置(`BL1_RO_BASE`)也就是只读内存段的起始地址是否对齐到页面边界。
+
+> 注：  
+> 确保段对齐到页面边界，可以提高性能和效率，比如：可以让 CPU 更有效地管理缓存和虚拟内存。
+
+---
+
+```asm
+#if SEPARATE_CODE_AND_RODATA
+...
+#else
+...
+#endif
+```
+
+这部分代码是对是否区分代码段和只读数据段而进行的操作，根据需要不同（定义了不同的宏定义），而进行不同的编译。
+
+---
+
+```asm
+.text . : {
+        __TEXT_START__ = .;
+        *bl1_entrypoint.o(.text*)
+        *(.text*)
+        *(.vectors)
+        . = ALIGN(PAGE_SIZE);
+        __TEXT_END__ = .;
+     } >ROM
+```
+
+`.text . : {...} >ROM`这段代码是在定义代码段，名称为`.text`，其后紧跟的`.`表示段的别名为`.`，代码段的内容被放置在内存区域`ROM`中。
+
+定义段的语法如下：
+
+```plaintext
+段名称 段别名 : 属性 {
+    段内容
+} > 内存区域
+```
+
+> 注：  
+> 段别名一般都可以写`.`，这样并不会引起歧义，是合法且精确的。
+
+`__TEXT_START__ = .;`:把代码段的起始地址(`__TEXT_START__`)设置为当前地址(`.`)
+
+`*`：通配符，表示所有目标文件。
+
+`bl1_entrypoint.o`：特定的目标文件名，表示只匹配名为`bl1_entrypoint.o`的目标文件。
+
+`(.text*)`：段选择器，表示匹配所有名称以`.text`开头的段。
+
+`*bl1_entrypoint.o(.text*)`：匹配名为 bl1_entrypoint.o 的目标文件。从该目标文件中选择所有名称以 .text 开头的段，并将这些段包含到当前的输出段中。
+
+`*(.text*)`：表示匹配所有目标文件中名称以`.text`开头的段，并将其包含在当前定义的`.text`段中。
+
+> 注：  
+> 这里可能会想到`*bl1_entrypoint.o(.text*)`和`*(.text*)`两行代码，将重复包含部分代码段。这里其实是为了把入口地址放到最开始，让程序开始执行，对于将来可能会重复的段，编译器会自动舍弃，如想看具体安排，可以查看编译过程中产生的`bl1.map`文件。
+
+`*(.vectors)`：表示将匹配所有目标文件中以`.vectors`命名的文件包含在当前定义的`.text`段中。
+
+`. = ALIGN(PAGE_SIZE);`：将当前位置对齐到页面大小，也就是相当于为下一个段另起一页。
+
+`__TEXT_END__ = .;`：设置代码段的结束地址为刚刚对齐过的"当前地址"，来保证代码段能够精确找到段尾。
+
+---
+
+```asm
+.ARM.extab . : {
+   *(.ARM.extab* .gnu.linkonce.armextab.*)
+} >ROM
+
+.ARM.exidx . : {
+   *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+} >ROM
+```
+
+`.ARM.extab`和`.ARM.exidx`是两个段名称，这些段通常包含异常处理相关的信息，在 ARM 架构中用来支持 C++ 异常处理机制。
+
+`.ARM.extab`段：异常处理表格(Exception Handling Table)，用来记录 C++ 异常处理信息。
+
+`.ARM.exidx`段：异常索引表格(Exception Index Table)，用来记录每个函数的异常处理信息的索引。
+
+`{*(.xxx* .xxxxxx.*)}`：表示把所有目标文件中匹配到的以这两个名称开头的段放入到对应的异常处理段中。
+
+---
+
+```asm
+.rodata . : {
+        __RODATA_START__ = .;
+        *(.rodata*)
+
+        . = ALIGN(8);
+        __PARSER_LIB_DESCS_START__ = .;
+        KEEP(*(.img_parser_lib_descs))
+        __PARSER_LIB_DESCS_END__ = .;
+
+        . = ALIGN(8);
+        __CPU_OPS_START__ = .;
+        KEEP(*(cpu_ops))
+        __CPU_OPS_END__ = .;
+
+        __RODATA_END__ = .;
+    } >ROM
+```
+
+`.rodata . : {...} >ROM`：定义只读数据段，段的名称为`.rodata`，别名为`.`，这个段存储在内存区域 ROM 中。
+
+`__RODATA_START__ = .;`：设置只读数据段的起始地址为当前地址。
+
+`*(.rodata*)`：匹配所有目标文件中名称以`.rodata`开头的段，包含到当前定义的`.rodata`中。
+
+`. = ALIGN(8)`：将当前地址以 8 个字节对齐。
+
+`__PARSER_LIB_DESCS_START__ = .;`：把解析库描述符的起始地址设置为对齐后的"当前地址"。
+
+`KEEP(*(.img_parser_lib_descs))`：将`.img_parser_lib_descs`段的内容保留在此处。
+
+`__PARSER_LIB_DESCS_END__ = .;`：把解析库描述符的结束地址设置为当前地址。
+
+`. = ALIGN(8)`：将当前地址以 8 个字节对齐。
+
+`__CPU_OPS_START__ = .;`：设置 CPU 操作的起始地址为当前地址。
+
+`KEEP(*(cpu_ops))`：
+
+`__CPU_OPS_END__ = .;`：设置 CPU 操作的结束地址为当前地址。
+
+`__RODATA_END__ = .;`：设置只读数据段的结束地址为当前地址。
+
+---
+
+```asm
+ro . : {
+    __RO_START__ = .;
+    *bl1_entrypoint.o(.text*)
+    *(.text*)
+    *(.rodata*)
+    . = ALIGN(8);
+    __PARSER_LIB_DESCS_START__ = .;
+    KEEP(*(.img_parser_lib_descs))
+    __PARSER_LIB_DESCS_END__ = .;
+    . = ALIGN(8);
+    __CPU_OPS_START__ = .;
+    KEEP(*(cpu_ops))
+    __CPU_OPS_END__ = .;
+    *(.vectors)
+    __RO_END__ = .;
+} >ROM
+```
+
+`ro . : {...} >ROM`：这段代码定义了合并代码段和只读数据段的段，名称为`ro`，别名为`.`，段存储在内存区域 ROM 中。
+
+其他的与分开定义别无二致，就是单纯物理上把代码和只读数据放到一起而已，省去了分页这一步。
+
+> 注：  
+> 在段内使用 8 字节对齐的原因是在64位的系统中，指针、长整型、文件描述符的长度通常为 8 字节
+
+---
+
+```asm
+ASSERT(__CPU_OPS_END__ > __CPU_OPS_START__,
+           "cpu_ops not defined for this platform.")
+```
+
+`ASSERT(__CPU_OPS_END__ > __CPU_OPS_START__,"cpu_ops not defined for this platform.")`：断言判断`__CPU_OPS_END__`是否大于`__CPU_OPS_START__`，即平台定义了`cpu_ops`。
+
+> 注：  
+> 判断 cpu_ops 是为了确保特定平台的 CPU 操作集合被正确的包含和处理，捕捉配置错位，确保内存布局正确，并简化调试过程。
+
+---
+
+```asm
+. = BL1_RW_BASE;
+ASSERT(BL1_RW_BASE == ALIGN(PAGE_SIZE),
+           "BL1_RW_BASE address is not aligned on a page boundary.")
+
+.data . : ALIGN(16) {
+      __DATA_RAM_START__ = .;
+      *(.data*)
+      __DATA_RAM_END__ = .;
+   } >RAM AT>ROM
+```
+
+`. = BL1_RW_BASE;`：设置当前地址为`BL1_RW_BASE`，即读写段的起始地址。
+
+`ASSERT(BL1_RW_BASE == ALIGN(PAGE_SIZE),"BL1_RW_BASE address is not aligned on a page boundary.")`：断言判断读写段的起始地址是都进行了页面对齐。
+
+`.data . : ALIGN(16) {...} >RAM AT>ROM`：定义一个名为`.data`的段，`ALIGN(16)`表示将当前地址以 16 字节对齐，通常是为了满足硬件需求。
+`>RAM`表示段内容运行时放置在 RAM 内存区域。`AT>ROM`表示加载时存储在 ROM 中
+
+> 注：  
+> 如果段定义的最后只有`>RAM`表示段被放置在 RAM 中，不论加载时或者运行时都是，只有制定了`AT>ROM`才表示加载时特殊处理与运行时不同。
+
+---
+
+```asm
+stacks . (NOLOAD) : {
+      __STACKS_START__ = .;
+      *(tzfw_normal_stacks)
+      __STACKS_END__ = .;
+    } >RAM
+```
+
+`stacks . (NOLOAD) : {...} >RAM`：定义一个名为`stacks`的栈段，`(NOLOAD)`指示连接器不要将此段的内容加载到输出文件中。通常栈的使用需要等到运行时分配内存段，因为栈不用初始化数据。
+
+`*(tzfw_normal_stacks)`：将所有符合模式tzfw_normal_stacks的段内容放在此处。
+
+---
+
+```asm
+.bss : ALIGN(16) {
+    __BSS_START__ = .;
+    *(.bss*)
+    *(COMMON)
+    __BSS_END__ = .;
+} >RAM
+```
+
+`.bss`：定义一个名为.bss的内存段。.bss 段通常用于存储未初始化的全局变量和静态变量，默认初始化为0。
+
+`ALIGN(16)`:将段的起始地址对齐到16字节边界。
+
+`*(COMMON)`：将所有符合模式 COMMON 的段内容放在此处。COMMON 段用于存储未初始化的全局变量。
+
+---
+
+```asm
+xlat_table (NOLOAD) : {
+        *(xlat_table)
+    } >RAM
+```
+
+`xlat_table`：定义一个名为`xlat_table`的内存段。
+
+`*(xlat_table)`：匹配目标文件中所有`xlat_table`文件，放到这个定义的`xlat_table`段中。
+> 注：  
+> xlat_table 段用于存储页表等运行时生成的翻译表（translation tables），这些表通常用于虚拟地址到物理地址的映射。在嵌入式系统和操作系统中，翻译表是内存管理单元（MMU）操作的关键部分。
+
+---
+
+```asm
+#if USE_COHERENT_MEM
+    coherent_ram (NOLOAD) : ALIGN(PAGE_SIZE) {
+        __COHERENT_RAM_START__ = .;
+        *(tzfw_coherent_mem)
+        __COHERENT_RAM_END_UNALIGNED__ = .;
+
+        . = ALIGN(PAGE_SIZE);
+        __COHERENT_RAM_END__ = .;
+    } >RAM
+#endif
+```
+
+`#if USE_COHERENT_MEM`：当启用了一致内存之后，将下列代码编译。
+
+`coherent_ram (NOLOAD) : ALIGN(PAGE_SIZE) {...} >RAM`：定义一个名为`coherent_ram`的段，这个段不需要加载进入内存，但是这个段的起始地址需要按页对齐，运行时加载到 RAM 中。
+
+`__COHERENT_RAM_END_UNALIGNED__ = .;`：获得一个未对齐的结束的地址。
+
+`. = ALIGN(PAGE_SIZE);`：将段的结束地址按页对齐，为下一个段从另一个页开始。
+
+---
+
+```asm
+__BL1_RAM_START__ = ADDR(.data);
+__BL1_RAM_END__ = .;
+
+__DATA_ROM_START__ = LOADADDR(.data);
+__DATA_SIZE__ = SIZEOF(.data);
+
+__BL1_ROM_END__ =  __DATA_ROM_START__ + __DATA_SIZE__;
+ASSERT(__BL1_ROM_END__ <= BL1_RO_LIMIT,
+      "BL1's ROM content has exceeded its limit.")
+
+__BSS_SIZE__ = SIZEOF(.bss);
+```
+
+`__BL1_RAM_START__ = ADDR(.data);`：获取`.data`数据段的虚拟地址（`.data`段在 RAM 中的起始地址），作为运行时 RAM 段的起始地址。
+
+`__BL1_RAM_END__ = .;`：把当前地址设置为运行时 RAM 段的结束地址。
+
+`__DATA_ROM_START__ = LOADADDR(.data);`：获得`.data`段的加载地址。
+
+`__DATA_SIZE__ = SIZEOF(.data);`：获得`.data`段的大小。
+
+`__BL1_ROM_END__ =  __DATA_ROM_START__ + __DATA_SIZE__;`：获得`.data`段在 ROM 中的结束地址。
+
+`ASSERT(__BL1_ROM_END__ <= BL1_RO_LIMIT,"BL1's ROM content has exceeded its limit.")`：用于确保 BL1 的 ROM 内容不会超出分配的 ROM 区域 BL1_RO_LIMIT，防止内存溢出或其他内存布局问题。
+
+`__BSS_SIZE__ = SIZEOF(.bss);`：获得`.bss`段的大小。
+
+---
+
+```asm
+#if USE_COHERENT_MEM
+    __COHERENT_RAM_UNALIGNED_SIZE__ =
+        __COHERENT_RAM_END_UNALIGNED__ - __COHERENT_RAM_START__;
+#endif
+```
+
+这段代码的含义是：当启用一致内存时，获得一致内存段的实际大小。
+
+---
+
+```asm
+ASSERT(. <= BL1_RW_LIMIT, "BL1's RW section has exceeded its limit.")
+```
+
+断言判断配置完成之后 BL1 有没有超出限制。
+
+## 1.2 bl1_entrypoint 源码分析
 
 这个函数主要进行EL3执行环境的基本初始化、设置向量表，并加载 bl2 的 image 到对应的位置并跳转到 bl2 执行。
 
-### 1-1-1 源代码
+### 1-2-1 源代码
 
 <details>
   <summary>点击这里展开/收起代码块</summary>
@@ -48,7 +559,7 @@ endfunc bl1_entrypoint
 
 </details>
 
-### 1-1-2 func bl1_entrypoint
+### 1-2-2 func bl1_entrypoint
 
 ```asm
 func bl1_entrypoint
@@ -60,7 +571,7 @@ endfunc bl1_entrypoint
 `endfunc bl1_entrypoint`表示函数到此结束。
 `bl1_entrypoint()`函数是当 CPU 从热复位或者冷复位中释放时，进入可信固件代码的入口点。其中热复位为 reset、冷复位为 power on。
 
-### 1-1-3 el3_entrypoint_common 功能
+### 1-2-3 el3_entrypoint_common 功能
 
 ```asm
 el3_entrypoint_common               \
@@ -74,11 +585,11 @@ el3_entrypoint_common               \
 
 这里使用宏定义了一个名为`el3_entrypoint_common`的函数，主要用于 ARM 架构的 EL3 执行级别上进行系统的初始化和配置，在`include/arch/aarch64/el3_common_macros.S`文件中实现。
 
-### 1-1-4 bl1_setup 功能
+### 1-2-4 bl1_setup 功能
 
 `bl bl1_setup`跳转执行`bl1_setup`函数，这个函数在`include/bl1/b1.h`中声明，在`bl1/bl1_main.c`中实现。其主要用于执行对应平台的初始化设置，从未为 bl1_main 的执行初始化环境。
 
-### 1-1-5 pauth_init_enable_el3 功能
+### 1-2-5 pauth_init_enable_el3 功能
 
 ```asm
 #if ENABLE_PAUTH
@@ -91,7 +602,7 @@ bl   pauth_init_enable_el3
 
 `#endif`表示条件编译的结束标志，它指示条件编译的代码块结束。在这个例子中，它表示如果`ENABLE_PAUTH`宏被定义，那么上面的代码块从`#if`到`#endif`之间的内容都将被编译。
 
-### 1-1-6 bl1_main 功能
+### 1-2-6 bl1_main 功能
 
 ```asm
 bl   bl1_main
@@ -99,7 +610,7 @@ bl   bl1_main
 
 `bl bl1_main`跳转执行`bl1_main`函数,这个函数在`include/bl1/b1.h`中声明，在`bl1/bl1_main.c`中实现。其主要功能为：执行后期架构和平台特定初始化的函数。它还会查询平台以加载和运行下一个 BL 映像。仅在冷启动后由主 CPU 调用。
 
-### 1-1-7 pauth_disable_el3 功能
+### 1-2-7 pauth_disable_el3 功能
 
 ```asm
 #if ENABLE_PAUTH
@@ -112,7 +623,7 @@ bl   pauth_disable_el3
 
 `#endif`表示条件编译的结束标志，它指示条件编译的代码块结束。在这个例子中，它表示如果`ENABLE_PAUTH`宏被定义，那么上面的代码块从`#if`到`#endif`之间的内容都将被编译。
 
-### 1-1-8 el3_exit 功能
+### 1-2-8 el3_exit 功能
 
 ```asm
 b   el3_exit
@@ -120,9 +631,9 @@ b   el3_exit
 
 ARM 架构中从 EL3 执行级别中退出到更低的异常级别，并跳转到下一个镜像执行。
 
-## 1.2 el3_entrypoint_common 源码解析
+## 1.3 el3_entrypoint_common 源码解析
 
-### 1-2-1 源代码
+### 1-3-1 源代码
 
 在`include/arch/aarch64/el3_common_macros.S`文件中实现。
 
@@ -235,7 +746,7 @@ ARM 架构中从 EL3 执行级别中退出到更低的异常级别，并跳转�
 
 </details>
 
-### 1-2-2 源码分析
+### 1-3-2 源码分析
 
 ```asm
 .macro el3_entrypoint_common                    \
@@ -505,7 +1016,7 @@ bl   plat_set_my_stack
 
 `update_stack_protector_canary`：作用是更新或者设置栈保护器的标志值（canary），用于检测栈溢出攻击。
 
-## 1.3 bl1_setup 解析
+## 1.4 bl1_setup 解析
 
 函数实现在`/bl1/bl1_main.c`中，主要执行两个函数`bl1_early_platform_setup()`和`bl1_plat_arch_setup()`。
 `bl1_setup`函数主要是为了后面`bl1_main`的执行初始化。
@@ -514,7 +1025,7 @@ bl   plat_set_my_stack
 
 `bl1_plat_arch_setup()`：执行 ARM 平台之间共享的早期平台特定设置。
 
-## 1.4 pauth_init_enable_el3 源码解析
+## 1.5 pauth_init_enable_el3 源码解析
 
 `pauth_init_enable_el3`是启用 EL3 指针认证。
 
@@ -568,10 +1079,12 @@ endfunc pauth_init_enable_el3
 
 `ldp   x29, x30, [sp], #16`：这一步对应着`stp   x29, x30, [sp], #-16!`这个指令。这一步将前面存在栈顶的 x29 和 x30 两个寄存器的值读回寄存器，恢复现场。
 
-## 1.5 bl1_main 源码解析
+## 1.6 bl1_main 源码解析
 
 bl1_main函数的作用主要是：执行后期架构和平台的初始化函数，并查询平台要加载和运行的下一个 BL 映像。
 > 注：只在冷启动后，由主 CPU 调用。
+
+### 1-6-1 源代码
 
 <details>
   <summary>点击这里展开/收起代码块</summary>
@@ -641,7 +1154,7 @@ void bl1_main(void)
 
 </details>
 
----
+### 1-6-2 源码分析
 
 `unsigned int image_id;`：`image_id`用来存接下来要传入那个image
 
@@ -778,7 +1291,7 @@ bl1_apiakey 这个数组里面存储了 APIAKey_EL1 密钥的完整部分。
 
 `console_flush();`：函数用于刷新控制台输出缓冲区，确保待输出的内容会及时显示在控制台上。
 
-## 1.6 pauth_disable_el3 源码解析
+## 1.7 pauth_disable_el3 源码解析
 
 `pauth_disable_el3`是关闭 EL3 指针认证。
 
@@ -800,7 +1313,9 @@ endfunc pauth_disable_el3
 
 `isb`：等待系统控制寄存器的修改生效。
 
-## 1.7 el3_exit 源码解析
+## 1.8 el3_exit 源码解析
+
+### 1-8-1 源代码
 
 <details>
   <summary>点击这里展开/收起代码块</summary>
@@ -838,7 +1353,7 @@ endfunc el3_exit
 
 </details>
 
----
+### 1-8-2 源码分析
 
 ```asm
 mov   x17, sp
