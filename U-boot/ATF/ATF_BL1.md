@@ -949,7 +949,8 @@ eret 指令会从当前的异常级别返回到较低的异常级别，并跳转
 2. 跳转到入口点：eret 会将控制权转移到 ELR_EL3 中存储的地址，该地址是在BL1中设置的BL2入口点地址。
 
 > 注：  
-> 通过分析 bl1_main 函数及其调用的关键函数 bl1_load_bl2 和 bl1_prepare_next_image，可以看到：  
-> BL2 的入口地址是在 bl1_load_bl2 函数中确定并保存的。  
-> 在 bl1_prepare_next_image 函数中，这个入口地址被写入 elr_el3 寄存器。  
-> 当 BL1 完成其任务并执行 eret 指令时，处理器会跳转到 elr_el3 中存储的地址，即 BL2 的入口地址，从而开始执行 BL2 的代码。
+> 通过分析 bl1_main 函数及其调用的关键函数 bl1_load_bl2 和 bl1_prepare_next_image，可以看到：
+>
+> 1. BL2 的入口地址是在 bl1_load_bl2 函数中确定并保存的。  
+> 2. 在 bl1_prepare_next_image 函数中，这个入口地址被写入 elr_el3 寄存器。  
+> 3. 当 BL1 完成其任务并执行 eret 指令时，处理器会跳转到 elr_el3 中存储的地址，即 BL2 的入口地址，从而开始执行 BL2 的代码。
