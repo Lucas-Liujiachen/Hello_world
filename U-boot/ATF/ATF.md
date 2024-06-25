@@ -35,6 +35,6 @@ ATF的code boot的整个启动过程如下：
    当 TEE_OS image 启动完成之后会触发一个 ID 为 TEESMC_OPTEED_RETURN_ENTRY_DONE 的 smc 调用来告知 EL3 TEE OS image 已经完成了初始化，然后将 CPU 的状态恢复到 bl31_init 的位置继续执行。  
    bl31 通过遍历在 bl2 中记录的 image 链表来找到需要执行的 bl33 的 image。然后通过获取到 bl33 image 的镜像信息，设定下一个阶段的 CPU 上下文，退出 el3 然后进入到 bl33 image 的执行。
 
-[ATF流程一：bl1](./ATF_BL1.md)
-[ATF流程二：bl2](./ATF_BL2.md)
-[ATF流程三：bl31](./ATF_BL31.md)
+[ATF流程一：bl1](./ATF_BL1.md)  
+[ATF流程二：bl2](./ATF_BL2.md)  
+[ATF流程三：bl31](./ATF_BL31.md)  
