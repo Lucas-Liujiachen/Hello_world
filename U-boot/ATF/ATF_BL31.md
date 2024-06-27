@@ -353,9 +353,9 @@ b    el3_exit
 ### 3-2-1 源代码
 
 <details>
-    <summary>点击这里展开/收起代码块<summary>
+    <summary>点击这里展开/收起代码块</summary>
 
-```C
+```c
 void bl31_main(void)
 {
     NOTICE("BL31: %s\n", version_string);
@@ -593,7 +593,7 @@ for (; start_idx <= end_idx; start_idx++)
 ### 3-4-1 源代码
 
 <details>
-    <summary>点击这里展开/收起代码块<summary>
+    <summary>点击这里展开/执行代码块</summary>
 
 ```C
 void __init bl31_prepare_next_image_entry(void)
