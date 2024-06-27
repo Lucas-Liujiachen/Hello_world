@@ -38,3 +38,4 @@ ATF的code boot的整个启动过程如下：
 [ATF流程一：bl1](./ATF_BL1.md)  
 [ATF流程二：bl2](./ATF_BL2.md)  
 [ATF流程三：bl31](./ATF_BL31.md)  
+[ATF流程三：bl32](./ATF_BL32.md)  

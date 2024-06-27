@@ -706,7 +706,7 @@ console_flush();
 
 `print_entry_point_info(next_bl_ep_info);`：打印出下一个镜像的入口点信息。
 
-`console_flush();`：函数用于刷新控制台输出缓冲区，确保待输出的内容会及时显示在控制台上。
+`console_flush();`：用于刷新控制台输出缓冲区，确保待输出的内容会及时显示在控制台上。
 
 ---
 
