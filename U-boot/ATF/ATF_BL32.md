@@ -4,26 +4,14 @@
 
 [back](./ATF.md)
 
-<details>
-    <summary>点击这里展开/执行代码块</summary>
+## 4.1 fd
 
-```C
-void bl31_plat_runtime_setup(void)
-{
-    struct draminfo *di = (struct draminfo *)(unsigned long)DRAMINFO_BASE;
+## 4.2 fd
 
-    sq_scp_get_draminfo(di);
-}
+## 4.3 fd
 
-uint32_t sq_scp_get_draminfo(struct draminfo *info)
-{
-#if SQ_USE_SCMI_DRIVER
-    sq_scmi_get_draminfo(info);
-#else
-    scpi_get_draminfo(info);
-#endif
-    return 0;
-}
-```
+## 4.4 fd
 
-</details>
+## 4.5 fd
+
+## 4.6 fd

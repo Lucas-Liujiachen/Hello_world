@@ -747,3 +747,197 @@ bl2_run_next_image(next_bl_ep_info);
 
 默认实现只是让机器处于低功耗模式，然后无限循环。
 ```
+
+## 2-8 smc的中断处理函数 smc_handler64 源码解析
+
+在 bl2_main 函数中，有一行代码为`smc(BL1_SMC_RUN_IMAGE, (unsigned long)next_bl_ep_info, 0, 0, 0, 0, 0, 0);`这行代码实现了从 bl2 向 bl31 的跳转。该函数将触发 smc 操作，而 smc 的 handler 在 bl1 阶段的时候被指定，调用该函数的时候带入 command ID 是 BL1_SMC_RUN_IMAGE，故执行该函数之后，系统将跳转到中断处理函数：smc_handler64 继续执行。该函数定义在`bl1/aarch64/bl1_exception.S`文件中。
+
+### 2-8-1 源代码
+
+<details>
+  <summary>点击这里展开/收起代码块</summary>
+
+```asm
+func smc_handler64
+
+  mov  x30, #BL1_SMC_RUN_IMAGE
+  cmp  x30, x0
+  b.ne  smc_handler
+
+  mrs  x30, scr_el3
+  tst  x30, #SCR_NS_BIT
+  b.ne  unexpected_sync_exception
+
+  ldr  x30, [sp, #CTX_EL3STATE_OFFSET + CTX_RUNTIME_SP]
+  msr  spsel, #MODE_SP_EL0
+  mov  sp, x30
+
+  mov  x20, x1
+
+  mov  x0, x20
+  bl  bl1_print_next_bl_ep_info
+
+  ldp  x0, x1, [x20, #ENTRY_POINT_INFO_PC_OFFSET]
+  msr  elr_el3, x0
+  msr  spsr_el3, x1
+  ubfx  x0, x1, #MODE_EL_SHIFT, #2
+  cmp  x0, #MODE_EL3
+  b.ne  unexpected_sync_exception
+
+  bl  disable_mmu_icache_el3
+  tlbi  alle3
+  dsb  ish /* ERET implies ISB, so it is not needed here */
+
+#if SPIN_ON_BL1_EXIT
+  bl  print_debug_loop_message
+debug_loop:
+  b  debug_loop
+#endif
+
+  mov  x0, x20
+  bl  bl1_plat_prepare_exit
+
+  ldp  x6, x7, [x20, #(ENTRY_POINT_INFO_ARGS_OFFSET + 0x30)]
+  ldp  x4, x5, [x20, #(ENTRY_POINT_INFO_ARGS_OFFSET + 0x20)]
+  ldp  x2, x3, [x20, #(ENTRY_POINT_INFO_ARGS_OFFSET + 0x10)]
+  ldp  x0, x1, [x20, #(ENTRY_POINT_INFO_ARGS_OFFSET + 0x0)]
+  eret
+endfunc smc_handler64
+
+unexpected_sync_exception:
+  mov  x0, #SYNC_EXCEPTION_AARCH64
+  bl  plat_report_exception
+  no_ret  plat_panic_handler
+
+
+smc_handler:
+
+  bl  save_gp_pmcr_pauth_regs
+
+#if ENABLE_PAUTH
+  bl  pauth_load_bl1_apiakey_enable
+#endif
+
+  mov  x5, xzr
+  mov  x6, sp
+
+  ldr  x12, [x6, #CTX_EL3STATE_OFFSET + CTX_RUNTIME_SP]
+
+  msr  spsel, #MODE_SP_EL0
+  mov  sp, x12
+
+  mrs  x16, spsr_el3
+  mrs  x17, elr_el3
+  mrs  x18, scr_el3
+  stp  x16, x17, [x6, #CTX_EL3STATE_OFFSET + CTX_SPSR_EL3]
+  str  x18, [x6, #CTX_EL3STATE_OFFSET + CTX_SCR_EL3]
+
+  bfi  x7, x18, #0, #1
+
+  bl  bl1_smc_handler
+
+  b  el3_exit
+```
+
+</details>
+
+### 2-8-2 源码解析
+
+TODO
+
+```asm
+  mov  x30, #BL1_SMC_RUN_IMAGE
+  cmp  x30, x0
+  b.ne  smc_handler
+```
+
+`mov  x30, #BL1_SMC_RUN_IMAGE`：将宏定义的`BL1_SMC_RUN_IMAGE`赋值存到寄存器 x30 中。
+
+---
+
+TODO
+
+```asm
+  mrs  x30, scr_el3
+  tst  x30, #SCR_NS_BIT
+  b.ne  unexpected_sync_exception
+```
+
+---
+
+TODO
+
+```asm
+  ldr  x30, [sp, #CTX_EL3STATE_OFFSET + CTX_RUNTIME_SP]
+  msr  spsel, #MODE_SP_EL0
+  mov  sp, x30
+```
+
+---
+
+TODO
+
+```asm
+  mov  x20, x1
+  
+  mov  x0, x20
+  bl  bl1_print_next_bl_ep_info
+```
+
+---
+
+TODO
+
+```asm
+  ldp  x0, x1, [x20, #ENTRY_POINT_INFO_PC_OFFSET]
+  msr  elr_el3, x0
+  msr  spsr_el3, x1
+  ubfx  x0, x1, #MODE_EL_SHIFT, #2
+  cmp  x0, #MODE_EL3
+  b.ne  unexpected_sync_exception
+```
+
+---
+
+TODO
+
+```asm
+  bl  disable_mmu_icache_el3
+  tlbi  alle3
+  dsb  ish /* ERET implies ISB, so it is not needed here */
+```
+
+---
+
+TODO
+
+```asm
+#if SPIN_ON_BL1_EXIT
+  bl  print_debug_loop_message
+debug_loop:
+  b  debug_loop
+#endif
+```
+
+---
+
+TODO
+
+```asm
+  mov  x0, x20
+  bl  bl1_plat_prepare_exit
+```
+
+---
+
+TODO
+
+```asm
+  ldp  x6, x7, [x20, #(ENTRY_POINT_INFO_ARGS_OFFSET + 0x30)]
+  ldp  x4, x5, [x20, #(ENTRY_POINT_INFO_ARGS_OFFSET + 0x20)]
+  ldp  x2, x3, [x20, #(ENTRY_POINT_INFO_ARGS_OFFSET + 0x10)]
+  ldp  x0, x1, [x20, #(ENTRY_POINT_INFO_ARGS_OFFSET + 0x0)]
+  eret
+```
+
+---
