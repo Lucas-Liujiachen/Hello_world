@@ -843,19 +843,21 @@ smc_handler:
 
 ### 2-8-2 源码解析
 
-TODO
-
 ```asm
   mov  x30, #BL1_SMC_RUN_IMAGE
   cmp  x30, x0
   b.ne  smc_handler
 ```
 
+这段代码的作用是判定 smc 操作时，传入的参数是否跳转执行 image 的操作。
+
 `mov  x30, #BL1_SMC_RUN_IMAGE`：将宏定义的`BL1_SMC_RUN_IMAGE`赋值存到寄存器 x30 中。
 
----
+`cmp x30, x0`：比较两个寄存器的值，这个指令并不会改变寄存器的值，但是会更新条件标志。
 
-TODO
+`b.ne smc_handler`：如果上一步的比较结果不相等，那么跳转到`smc_handler`标志处继续执行。
+
+---
 
 ```asm
   mrs  x30, scr_el3
@@ -863,15 +865,29 @@ TODO
   b.ne  unexpected_sync_exception
 ```
 
----
+这段代码的作用是为了确保当前状态处于安全状态（安全世界）。
 
-TODO
+`mrs  x30, scr_el3`：将系统控制寄存器 scr_el3 的值赋值给通用寄存器 x30。
+
+`tst`:这个指令的作用是测试一个寄存器的特定位是否被设置，其原理执行的是 AND 操作，但是不会存储结果，而是会改变条件标志。
+
+`tst  x30, #SCR_NS_BIT`：这行指令的作用是判断寄存器 x30 是否设置了非安全位(SCR_NS_BIT)。这条指令将 x30 中的值与 SCR_NS_BIT 进行 AND 操作，如果结果为 0，表示 NS 位未设置；如果结果非 0，表示 NS 位已设置。
+
+`b.ne  unexpected_sync_exception`：上一步执行结果如果是不等于 0，即寄存器 x30 设置了非安全位，那么表明当前处于非安全状态，程序将跳转到`unexpected_sync_exception`标签处执行。
+
+---
 
 ```asm
   ldr  x30, [sp, #CTX_EL3STATE_OFFSET + CTX_RUNTIME_SP]
   msr  spsel, #MODE_SP_EL0
   mov  sp, x30
 ```
+
+`ldr  x30, [sp, #CTX_EL3STATE_OFFSET + CTX_RUNTIME_SP]`：从堆栈指针 sp 偏移指定的位置后取一个值放到寄存器 x30 中。
+
+`msr  spsel, #MODE_SP_EL0`：将宏定义的`MODE_SP_EL0`赋值给系统寄存器 spsel，设置堆栈指针选择器为 EL0 模式下的堆栈指针。`MODE_SP_EL0`表示选择 EL0 模式下的堆栈指针（SP_EL0）
+
+`mov  sp, x30`：将 x30 寄存器中存的地址的值赋值给堆栈寄存器 sp。
 
 ---
 
@@ -884,9 +900,15 @@ TODO
   bl  bl1_print_next_bl_ep_info
 ```
 
----
+这段指令是传递 EL3 执行级别的控制权给下一个 BL 镜像，这里的 x1 里面存储了描述下一个 image 的入口地址信息的数据结构的地址。
 
-TODO
+`mov  x20, x1`：这里是将寄存器 x1 中的值进行备份。
+
+`mov  x0, x20`：将寄存器 x1 的值赋值给 x0 寄存器，作为参数传递给下一个函数。
+
+`bl  bl1_print_next_bl_ep_info`：跳转执行函数`bl  bl1_print_next_bl_ep_info`。
+
+---
 
 ```asm
   ldp  x0, x1, [x20, #ENTRY_POINT_INFO_PC_OFFSET]
@@ -897,9 +919,30 @@ TODO
   b.ne  unexpected_sync_exception
 ```
 
----
+这段指令进行了系统控制寄存器的设置，并确保现在处在 EL3 执行级别。
 
-TODO
+`ldp  x0, x1, [x20, #ENTRY_POINT_INFO_PC_OFFSET]`：从寄存器 x20 偏移指定地址后的地址中取两个值存到寄存器 x0 和 x1 中。
+
+`msr  elr_el3, x0`：把寄存器 x0 的值赋值给系统控制寄存器 elr_el3。
+
+`msr  spsr_el3, x1`：把寄存器 x1 的值赋值给系统控制寄存器 spsr_el3。
+
+`ubfx  x0, x1, #MODE_EL_SHIFT, #2`：从寄存器 x1 中的`MODE_EL_SHIFT`这一位开始取两位无符号位字段存储到寄存器 x0 中。
+
+> ```plaintext
+> ubfx（Unsigned Bit Field Extract）是 ARMv8 指令集中的一条指令，用于从一个源寄存器中提取一个无符号的位字段，并将结果存储到目标寄存器中。  
+> UBFX <Rd>, <Rn>, #<lsb>, #<width> 
+> Rd：目标寄存器（Destination Register），存储提取后的位字段。 
+> Rn：源寄存器（Source Register），从中提取位字段。  
+> #<lsb>：起始位位置（Least Significant Bit），指定从源寄存器的哪个位开始提取。  
+> #<width>：位字段的宽度（Width），指定提取多少位  
+> ```
+
+`cmp  x0, #MODE_EL3`：比较取出来的两个位字段是都与`MODE_EL3`相同，即判断是否处于 EL3 级别执行。
+
+`b.ne  unexpected_sync_exception`：如果发现上面的结果不相等，那么说明现在不是处于 EL3 执行级别，那么就应该要进行异常处理。
+
+---
 
 ```asm
   bl  disable_mmu_icache_el3
@@ -907,9 +950,28 @@ TODO
   dsb  ish /* ERET implies ISB, so it is not needed here */
 ```
 
----
+`bl  disable_mmu_icache_el3`：跳转执行函数`disable_mmu_icache_el3`禁用 EL3 下的 MMU 和 I-cache。
 
-TODO
+`tlbi alle3`：刷新无效 EL3 的所有 TLB 条目，这一步确保所有旧的虚拟地址到物理地址的映射都被清除。`tlbi`指令用于刷新 TLB 条目。`alle3`是 TLB 刷新操作的一个参数，表示无效 EL3 的所有 TLB 条目。
+
+`dsb ish`：数据同步屏障，确保所有之前的内存访问指令在执行后续指令前完成，保内存操作的顺序性和一致性。
+
+`dsb(Data Synchronization Barrier)`：指令用于确保在它之前的所有内存访问完成后，才执行后续的内存访问指令。
+
+`ish(Inner Shareable)`：是一个域参数，表示屏障适用于内存系统中可共享的部分。
+
+> 问：既然是数据同步屏障那为什么不适用 isb 指令呢？  
+> 答：`dsb`指令是确保它之前的所有内存访问指令完成后，再执行`dsb`指令之后的内存访问指令。isb用于确保指令流的同步，而在这里，我们关注的是内存访问和TLB维护的同步。使用dsb是为了确保所有前面的内存操作和TLB无效化操作都已经完成和生效。如果在这里使用isb，只能确保指令流水线的同步，但不能保证内存访问的顺序和可见性。因此，使用dsb更符合需求。  
+>
+> isb指令确保在它之前发出的所有指令都已经执行完毕，并且在它之后发出的指令都要等到isb执行完毕后才能开始执行。  
+> 用途：isb通常用于处理器重新获取指令并正确解释接下来的指令流，尤其是在更改指令存储器或系统寄存器之后。  
+> 影响范围：isb影响的是指令的执行顺序，而不是内存访问的顺序。  
+>
+> dsb指令确保在它之前的所有内存访问操作都已经完成，并且这些结果对于后续的内存访问是可见的。  
+> 用途：dsb通常用于确保内存操作的顺序一致性，特别是在涉及内存映射或缓存维护操作时。  
+> 影响范围：dsb影响的是内存访问的顺序和可见性，确保所有前面的内存操作都完成后，才开始执行后续的内存操作。  
+
+---
 
 ```asm
 #if SPIN_ON_BL1_EXIT
@@ -919,18 +981,26 @@ debug_loop:
 #endif
 ```
 
----
+这段指令用于暂停程序执行，方便开发人员调试操作。
 
-TODO
+`#if SPIN_ON_BL1_EXIT`：条件编译，当设置了宏`SPIN_ON_BL1_EXIT`，就将下面的代码编译。
+
+`bl  print_debug_loop_message`：跳转执行函数`print_debug_loop_message`。这个函数的作用是打印和记录调试信息，告知程序即将进入一个循环调试。
+
+`b debug_loop`：无条件跳转到标签`debug_loop`处，即从此开始无限循环。
+
+---
 
 ```asm
   mov  x0, x20
   bl  bl1_plat_prepare_exit
 ```
 
----
+`mov x0, x20`：将寄存器 x20 中的值，存放到寄存器 x0 中。通过上下文可知，x20 寄存器中存储着包含下一个 image 的入口信息地址等信息的数据结构的地址。
 
-TODO
+`bl  bl1_plat_prepare_exit`：跳转执行函数`bl1_plat_prepare_exit`。这个函数的返回地址保存在链接寄存器 x30 中。
+
+---
 
 ```asm
   ldp  x6, x7, [x20, #(ENTRY_POINT_INFO_ARGS_OFFSET + 0x30)]
@@ -939,5 +1009,7 @@ TODO
   ldp  x0, x1, [x20, #(ENTRY_POINT_INFO_ARGS_OFFSET + 0x0)]
   eret
 ```
+
+这里加载一些重要的参数到寄存器 x0 ~ x7 中，通过上下文可知，x20 寄存器中存储着包含下一个 image 的入口信息地址、执行参数、CPU状态寄存器、安全状态信息等信息的数据结构的地址。
 
 ---
