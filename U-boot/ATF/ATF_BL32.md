@@ -287,9 +287,3 @@ endfunc opteed_enter_sp
 ```
 
 跳转执行函数 el3_exit，退出 el3 执行级别。
-
-## 4.4 fd
-
-## 4.5 fd
-
-## 4.6 fd
