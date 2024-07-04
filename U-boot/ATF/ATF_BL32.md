@@ -190,8 +190,6 @@ uint64_t rc;
 
 ---
 
-TODO
-
 ```C
 optee_entry_point = bl31_plat_get_next_image_ep_info(SECURE);
 assert(optee_entry_point);
@@ -201,8 +199,6 @@ assert(optee_entry_point);
 
 ---
 
-TODO
-
 ```C
 cm_init_my_context(optee_entry_point);
 ```
@@ -210,8 +206,6 @@ cm_init_my_context(optee_entry_point);
 初始化当前 CPU 的上下文，并根据传入的入口点信息设置入口点的状态。
 
 ---
-
-TODO
 
 ```C
 rc = opteed_synchronous_sp_entry(optee_ctx);
