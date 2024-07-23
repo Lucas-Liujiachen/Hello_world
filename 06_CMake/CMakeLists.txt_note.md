@@ -1,6 +1,6 @@
 # \[CMakeLists.txt学习笔记\]
 
-[返回目录](../Index.md)
+[返回](./CMake_note.md)
 
 ## 一、注意事项
 

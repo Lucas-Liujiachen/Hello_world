@@ -1,0 +1,98 @@
+
+U-Boot SPL 2022.04 (Jul 18 2024 - 13:24:49 +0800)
+DDRINFO: start DRAM init
+DDRINFO: DRAM rate 4000MTS
+DDRINFO:ddrphy calibration done
+DDRINFO: ddrmix config done
+SEC0:  RNG instantiated
+Normal Boot
+Trying to boot from BOOTROM
+Boot Stage: USB boot
+Find img info 0x&480247a0, size 856
+Need continue download 1024
+Download 1162240, Total size 1163360
+NOTICE:  BL31: v2.2(release):rel_imx_5.4.70_2.3.6-0-g15e8ff164
+NOTICE:  BL31: Built : 13:25:55, Jul 18 2024
+
+
+U-Boot 2022.04 (Jul 18 2024 - 13:24:49 +0800)
+
+CPU:   i.MX8MP[8] rev1.1 1800 MHz (running at 1200 MHz)
+CPU:   Commercial temperature grade (0C to 95C) at 32C
+Reset cause: POR
+Model: NXP i.MX8MPlus LPDDR4 EVK board
+DRAM:  6 GiB
+TCPC:  Vendor ID [0x1fc9], Product ID [0x5110], Addr [I2C2 0x50]
+Power supply on USB2
+TCPC:  Vendor ID [0x1fc9], Product ID [0x5110], Addr [I2C1 0x50]
+Core:  196 devices, 30 uclasses, devicetree: separate
+MMC:   FSL_SDHC: 1, FSL_SDHC: 2
+Loading Environment from nowhere... OK
+[*]-Video Link 0adv7535_mipi2hdmi adv7535@3d: Can't find cec device id=0x3c
+fail to probe panel device adv7535@3d
+fail to get display timings
+probe video device failed, ret -19
+
+        [0] lcd-controller@32e80000, video
+        [1] mipi_dsi@32e60000, video_bridge
+        [2] adv7535@3d, panel
+adv7535_mipi2hdmi adv7535@3d: Can't find cec device id=0x3c
+fail to probe panel device adv7535@3d
+fail to get display timings
+probe video device failed, ret -19
+In:    serial
+Out:   serial
+Err:   serial
+SEC0:  RNG instantiated
+
+ BuildInfo:
+  - ATF 15e8ff1
+
+MMC: no card present
+Detect USB boot. Will enter fastboot mode!
+Net:   eth0: ethernet@30be0000, eth1: ethernet@30bf0000 [PRIME]
+Fastboot: Normal
+Boot from USB for mfgtools
+*** Warning - Use default environment for                                mfgtools
+, using default environment
+
+Run bootcmd_mfg: run mfgtool_args;if iminfo ${initrd_addr}; then if test ${tee} = yes; then bootm ${tee_addr} ${initrd_addr} ${fdt_addr}; else booti ${loadaddr} ${initrd_addr} ${fdt_addr}; fi; else echo "Run fastboot ..."; fastboot 0; fi;
+Hit any key to stop autoboot:  0
+
+## Checking Image at 43800000 ...
+Unknown image format!
+Run fastboot ...
+Detect USB boot. Will enter fastboot mode!
+flash target is MMC:1
+MMC: no card present
+MMC card init failed!
+MMC: no card present
+** Block device MMC 1 not supported
+(NULL udevice *): request 00000000fcf25b80 was not queued to ep1in-bulk
+Detect USB boot. Will enter fastboot mode!
+flash target is MMC:2
+(NULL udevice *): request 00000000fcf25b80 was not queued to ep1in-bulk
+switch to partitions #0, OK
+mmc2(part 0) is current device
+Detect USB boot. Will enter fastboot mode!
+(NULL udevice *): request 00000000fcf25b80 was not queued to ep1in-bulk
+(NULL udevice *): request 00000000fcf25b80 was not queued to ep1in-bulk
+Starting download of 1523808 bytes
+(NULL udevice *): request 00000000fcf25b80 was not queued to ep1in-bulk
+...........
+downloading of 1523808 bytes finished
+(NULL udevice *): request 00000000fcf25b80 was not queued to ep1in-bulk
+writing to partition 'bootloader'
+Initializing 'bootloader'
+switch to partitions #1, OK
+mmc2(part 1) is current device
+Writing 'bootloader'
+
+MMC write: dev # 2, block # 0, count 2977 ... 2977 blocks written: OK
+Writing 'bootloader' DONE!
+(NULL udevice *): request 00000000fcf25b80 was not queued to ep1in-bulk
+Detect USB boot. Will enter fastboot mode!
+(NULL udevice *): request 00000000fcf25b80 was not queued to ep1in-bulk
+Detect USB boot. Will enter fastboot mode!
+(NULL udevice *): request 00000000fcf25b80 was not queued to ep1in-bulk
+

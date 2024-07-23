@@ -20,3 +20,7 @@
 ## RS232引脚定义
 
 ![RS232引脚定义](./Photos/RS232%20Pin%20Definition.png)
+
+## 更改GitHub库的权限
+
+<https://portal.internal.philips/create/templates/default/change-repo-visibility-service>

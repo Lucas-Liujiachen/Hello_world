@@ -1,6 +1,8 @@
 # \[CMake学习笔记\]
 
-[返回目录](../Index.md)
+[返回目录](../Index.md)  
+
+[CMakeList](./CMakeLists.txt_note.md)  
 
 ## 一、核心概念
 

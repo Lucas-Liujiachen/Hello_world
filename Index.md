@@ -1,17 +1,8 @@
 # 目录
 
-## 学习笔记目录
+## 杂记
 
-1. [杂记](./Miscellaneous_note/note.md)
-2. [CMake](./CMake/CMake_note.md)
-3. [CMakeLists](./CMake/CMakeLists.txt_note.md)
-4. [Makefile原理](./Makefile/note.md)
-5. [静态链接和动态链接](./Static%20linking%20and%20dynamic%20linking/note.md)
-6. [根文件系统](./rootfs/note.md)
-7. [电路图](./Circuit_diagram/note.md)
-8. [STM32](./STM32/note.md)
-9. [Yocto](./Yocto/note.md)
-10. [U-boot](./U-boot/note.md)
+[杂记](./Miscellaneous_note/note.md)
 
 ## 遇到的问题和解决方法
 
@@ -23,7 +14,15 @@
 
 [缩写](./Abbreviation/abbreviation.md)
 
-## 学习笔记目录1
+## 学习笔记目录
 
 1. [Linux](./00_Linux/Index.md)
 2. [Compile](./01_Compile/Index.md)
+3. [U-boot](./02_U-boot/note.md)
+4. [Kernel](./03_Kernel/)
+5. [Rootfs](./04_Rootfs/note.md)
+6. [Yocto](./05_Yocto/note.md)
+7. [CMake](./06_CMake/CMake_note.md)
+8. [Makefile](./07_Makefile/note.md)
+9. [STM32](./08_STM32/note.md)
+10. [Circuit_diagram](./09_Circuit_diagram/note.md)

@@ -1,0 +1,20 @@
+Booting from mmc ...
+info->name = fat
+filename = imx8mp-evk.dtb, addr = 1124073472
+*addr = 30c90000edfe0dd0
+I am here!
+info->name = fat, filename = imx8mp-evk.dtb, addr = 1124073472, offset = 0, len = 0
+I'm here in fat_size!
+ret1 = 0
+ret2 = -2
+ret3 = 0
+ret4 = -2
+ret5 = -2
+ret = -2
+ret = -2
+I am here before return!
+ret = -2
+1111111111111111111
+Failed to load 'imx8mp-evk.dtb'
+WARN: Cannot load the DT
+lucas-boot=>
