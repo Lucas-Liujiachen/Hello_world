@@ -10,7 +10,7 @@ export https_proxy='<https://165.225.112.14:10015/>'
 
 在Ubuntu命令行中，'~'表示当前用户目录，通常是"/home/username/"。
 
-## 找到"~/.bash.rc"文件
+## 找到"~/.bashrc"文件
 
 .bashrc文件隐藏在了用户目录下，可以使用如下命令
 

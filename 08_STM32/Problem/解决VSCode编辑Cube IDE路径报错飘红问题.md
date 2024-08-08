@@ -1,6 +1,6 @@
 # 解决VSCode编辑Cube IDE路径报错飘红问题
 
-[返回目录](../../Index.md)
+[返回目录](../note.md)
 
 首先，`Shift + Ctrl + P`打开VSCode配置输入`>c/c++`。
 选择如下选项：

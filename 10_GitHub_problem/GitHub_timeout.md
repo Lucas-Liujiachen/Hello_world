@@ -1,6 +1,6 @@
 # GitHub连接超时
 
-[返回目录](../Index.md)
+[返回目录](./Index.md)
 
 GitHub连接超时系DNS污染造成,导致很多时候push等操作无法正常运行。
 

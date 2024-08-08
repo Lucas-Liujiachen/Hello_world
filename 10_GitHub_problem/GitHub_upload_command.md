@@ -1,6 +1,6 @@
 # 命令行
 
-[返回目录](../Index.md)
+[返回目录](./Index.md)
 
 ```git
 git add .
