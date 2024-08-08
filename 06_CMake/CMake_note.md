@@ -1,5 +1,9 @@
 # \[CMake学习笔记\]
 
+[返回目录](../Index.md)  
+
+[CMakeList](./CMakeLists.txt_note.md)  
+
 ## 一、核心概念
 
 **gcc(GNU Complier Collection)** 将源文件**编译(Compile)** 成可执行文件或者库文件；
@@ -9,7 +13,7 @@
 编写大型项目的Makefile十分复杂，通过**CMake**就可以更简洁的定义构建流程，其中CMake定义构建过程的文件为**CMakeLists.txt**。
 
 其大致关系图如下：
-![关系图](../photos/Relationship_of_CMake_and_cpp.png "关系图")
+![关系图](./Photos/Relationship_of_CMake_and_cpp.png)
 
 ## 二、核心语法
 
